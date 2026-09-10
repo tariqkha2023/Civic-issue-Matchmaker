@@ -42,14 +42,13 @@ From the project root (Civic-issue-Matchmaker), run:
 
 At the end this will:
 
-- leave you at the `backend` folder directory
 - check that Python 3.12 is installed
 - create a local Python virtual environment named `.venv` if one does not already exist
 - install the correct Python packages that are listed in `backend/requirements.txt`
 
 ### 3. Activate the virtual environment
 
-After the setup script finishes, enter this to activate the environment manually:
+After the setup script finishes, (you will be back at the root) enter this to activate the environment manually:
 
 ```bash
 source backend/.venv/bin/activate
@@ -191,7 +190,6 @@ From the project root, run:
 
 This will:
 
-- enter the existing `backend` folder while performing the setup
 - check that Python 3.12 is installed
 - create a local Python virtual environment named `.venv` if one does not already exist
 - install the required Python packages listed in `backend\requirements.txt`
@@ -214,7 +212,7 @@ Then try again, run:
 
 ### 3. Activate the virtual environment
 
-After the setup script finishes, activate the environment manually:
+After the setup script finishes, (back at the root folder) activate the environment manually:
 
 ```powershell
 .\backend\.venv\Scripts\Activate.ps1
