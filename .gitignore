@@ -1,0 +1,13 @@
+# Python virtual environments
+.venv/
+backend/.venv/
+
+# Python generated files
+__pycache__/
+*.pyc
+
+# Environment variables / secrets
+.env
+
+# macOS generated file
+.DS_Store
