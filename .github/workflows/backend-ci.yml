@@ -1,0 +1,37 @@
+name: Backend CI ## continuous integration automatically checks new code 
+
+on:
+  push:
+  pull_request:
+
+# virtual cloud computer to test new code provided by GitHub 
+jobs:
+  backend-tests:
+    runs-on: ubuntu-latest   ## a linux OS
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install backend dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r backend/requirements.txt
+      
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Run Ruff
+        run: ruff check backend
+
+      - name: Install test dependencies
+        run: pip install pytest httpx
+
+      - name: Run backend tests
+        run: |
+          cd backend
+          pytest
