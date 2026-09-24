@@ -34,4 +34,4 @@ jobs:
       - name: Run backend tests
         run: |
           cd backend
-          pytest
+          python -m pytestst
