@@ -291,3 +291,118 @@ Start the backend:
 cd backend
 uvicorn app.main:app --reload
 ```
+
+
+
+--------------------------------------------------------------------------------
+
+
+## Updating an Existing Backend Setup
+
+Use these instructions AFTER you already completed the original backend setup 
+
+### Prerequisite
+
+"Docker Desktop" MUST be installed and running before using the update script.
+Confirm that it is indeed installed, becuase you must open it first, and verify in terminal that it is working
+
+Verify Docker Installation with:
+
+```bash
+docker --version
+docker compose version
+```
+
+---
+
+### Mac / Linux
+
+From the project root, run:
+
+```bash
+git pull
+./update_backend.sh
+```
+
+The update script will automatically:
+
+- reuse the existing Python virtual environment
+- install any new backend dependencies
+- create `backend/.env` if it does not already exist
+- start the PostgreSQL development database with Docker Compose
+- run Ruff checks
+- run the backend tests
+
+
+
+### Windows PowerShell
+
+From the project root folder/directory, run:
+
+```powershell
+git pull
+.\update_backend.ps1
+```
+
+The update script will automatically:
+
+- reuse the existing Python virtual environment
+- install any new backend dependencies
+- create `backend\.env` if it does not already exist
+- start the PostgreSQL development database with Docker Compose
+- run Ruff checks
+- run the backend tests
+
+
+
+## Verify the Backend..... with..
+
+### Mac / Linux
+
+From the project root:
+
+```bash
+source backend/.venv/bin/activate
+cd backend
+uvicorn app.main:app --reload
+```
+
+### Windows PowerShell
+
+From the project root:
+
+```powershell
+backend\.venv\Scripts\Activate.ps1
+cd backend
+uvicorn app.main:app --reload
+```
+
+
+### Backend Health Check
+
+Open browser::
+
+
+http://127.0.0.1:8000/health
+
+Expected response:
+
+```json
+{"status":"ok"}
+```
+
+### Database Health Check
+
+Open browser:
+
+http://127.0.0.1:8000/health/db
+
+
+Expected response:
+
+```json
+{"database":"ok"}
+```
+
+If both endpoints return the expected responses, the FastAPI backend and PostgreSQL development database are working correctly.
+
