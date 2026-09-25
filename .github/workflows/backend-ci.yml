@@ -8,6 +8,20 @@ on:
 jobs:
   backend-tests:
     runs-on: ubuntu-latest   ## a linux OS
+
+    env:
+      DATABASE_URL: postgresql://civic_user:civic_password@localhost:5432/civic_matchmaker
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: civic_matchmaker
+          POSTGRES_USER: civic_user
+          POSTGRES_PASSWORD: civic_password
+        ports:
+          - 5432:5432
+    
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
