@@ -3,11 +3,30 @@
 echo "Updating Civic Issue Matchmaker backend..."
 
 # Make sure Docker exists
+# Check Docker CLI
 if ! command -v docker >/dev/null 2>&1; then
-    echo "Docker is required but was not found."
-    echo "Please install Docker Desktop, start it, and run this script again."
-    exit 1
+    if [ -x "$HOME/.docker/bin/docker" ]; then
+        echo "Docker CLI found in $HOME/.docker/bin."
+        echo "Adding Docker CLI to PATH..."
+
+        export PATH="$HOME/.docker/bin:$PATH"
+
+        if [ -f "$HOME/.zshrc" ]; then
+            if ! grep -q 'export PATH="$HOME/.docker/bin:$PATH"' "$HOME/.zshrc"; then
+                echo 'export PATH="$HOME/.docker/bin:$PATH"' >> "$HOME/.zshrc"
+                echo "Docker CLI path added to ~/.zshrc."
+            fi
+        else
+            echo 'export PATH="$HOME/.docker/bin:$PATH"' >> "$HOME/.zshrc"
+            echo "Created ~/.zshrc and added Docker CLI path."
+        fi
+    else
+        echo "Docker is required but was not found."
+        echo "Please install Docker Desktop, start it, and run this script again."
+        exit 1
+    fi
 fi
+
 
 # Activate existing virtual environment
 if [ ! -d "backend/.venv" ]; then
