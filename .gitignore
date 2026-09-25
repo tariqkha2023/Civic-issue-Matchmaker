@@ -11,3 +11,5 @@ __pycache__/
 
 # macOS generated file
 .DS_Store
+
+backend/.env
