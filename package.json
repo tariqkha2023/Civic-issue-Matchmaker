@@ -1,5 +1,5 @@
 {
-  "name": "civicmatch",
+  "name": "civic-search-filters",
   "private": true,
   "version": "1.0.0",
   "type": "module",
@@ -9,11 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "lucide-react": "latest",
+    "react": "latest",
+    "react-dom": "latest"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
-    "vite": "^5.4.0"
+    "@vitejs/plugin-react": "latest",
+    "vite": "latest"
   }
 }
