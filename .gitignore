@@ -13,4 +13,17 @@ __pycache__/
 .DS_Store
 
 backend/.env
+
+# Local document conversion tooling
+/.local-tools/
+
+# Frontend build and local development data
 node_modules/
+dist/
+*.db
+.pytest_cache/
+.ruff_cache/
+playwright-report/
+test-results/
+
+.e2e/
