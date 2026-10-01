@@ -1,4 +1,4 @@
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 import httpx
 
@@ -57,12 +57,24 @@ class GitLabConnector(RepositoryConnector):
         }
 
         tasks = []
+        endpoint = urlparse(url)
+        visited = set()
 
         with httpx.Client(
             headers=self.get_auth_headers(),
             timeout=10.0,
         ) as client:
             while url:
+                current = urlparse(url)
+                if (
+                    current.scheme != "https"
+                    or current.netloc != endpoint.netloc
+                    or current.path != endpoint.path
+                ):
+                    raise ValueError("Unsafe pagination URL")
+                if url in visited or len(visited) >= 1000:
+                    raise ValueError("Pagination loop or scan limit exceeded")
+                visited.add(url)
                 response = client.get(url, params=params)
                 response.raise_for_status()
 
@@ -72,7 +84,12 @@ class GitLabConnector(RepositoryConnector):
                     "reset": response.headers.get("ratelimit-reset"),
                 }
 
-                for raw_task in response.json():
+                payload = response.json()
+                if not isinstance(payload, list) or any(
+                    not isinstance(item, dict) for item in payload
+                ):
+                    raise ValueError("Malformed source response")
+                for raw_task in payload:
                     tasks.append(self.normalize_task(raw_task))
 
                 url = self.get_next_page(response)
