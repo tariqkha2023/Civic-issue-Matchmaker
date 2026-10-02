@@ -1,14 +1,8 @@
 """Domain services for authorization, participation and metadata management."""
 
-
 from fastapi import HTTPException
-
-
 from sqlalchemy import delete, select
-
-
 from sqlalchemy.exc import IntegrityError
-
 
 from app.store import (
     AccountRole,
@@ -43,6 +37,11 @@ def can_maintain(db, user, repository_id):
         and db.get(MaintainerAccess, (user.id, repository_id)) is not None
     )
     return "administrator" in roles(db, user) or assigned
+
+
+def effective_metadata(db, task):
+    correction = db.get(MetadataCorrection, task.id)
+    return {**task.metadata_fields, **(correction.fields if correction else {})}
 
 
 def participation(db, user, task):
@@ -102,6 +101,30 @@ def change_participation(db, user, task_id, action):
         ) from None
 
 
+def correct_metadata(db, user, task_id, fields):
+    task = db.get(Task, task_id)
+    if not task:
+        raise HTTPException(404, "Task not found.")
+    if not can_maintain(db, user, task.repository_id):
+        raise HTTPException(403, "You may only manage your assigned repositories.")
+    previous = effective_metadata(db, task)
+    correction = db.get(MetadataCorrection, task_id)
+    if correction:
+        correction.fields = fields
+    else:
+        db.add(MetadataCorrection(task_id=task_id, fields=fields))
+    db.add(
+        AuditEntry(
+            actor_id=user.id,
+            action="metadata.corrected",
+            target=f"task:{task_id}",
+            details={"before": previous, "after": {**task.metadata_fields, **fields}},
+        )
+    )
+    db.commit()
+    return task
+
+
 def assign_roles(db, actor, user_id, granted, repository_ids):
     require_admin(db, actor)
     # Serialize role changes so concurrent requests cannot remove the last admin.
@@ -143,4 +166,3 @@ def assign_roles(db, actor, user_id, granted, repository_ids):
     )
     db.commit()
     return target
-
