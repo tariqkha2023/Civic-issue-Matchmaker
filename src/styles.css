@@ -3,8 +3,8 @@
 body{margin:0}
 button,input,select{font:inherit}
 button{cursor:pointer}
-.page{min-height:100vh}
-.brand{display:flex;align-items:center;justify-content:space-between;gap:11px;padding:14px 34px;background:#102a2c;color:#e8f0ee}.brandLink{display:flex;align-items:center;gap:11px;border:0;background:none;color:inherit;font-size:17px;font-weight:750;padding:0}.authBtns{display:flex;gap:8px}
+.app{min-height:100vh}
+.authBtns{display:flex;gap:8px}
 .brandIcon{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:#d9efe8;color:#123a37}
 .container{max-width:860px;margin:0 auto;padding:40px 20px 60px}
 .searchBar{display:flex;align-items:center;gap:10px;border:1px solid #dfe6e3;border-radius:12px;padding:14px 16px;background:#fff;box-shadow:0 2px 5px #132f2810;margin-bottom:22px}
@@ -18,7 +18,6 @@ button{cursor:pointer}
 .filters label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:750;margin:15px 0}
 .filters select{border:1px solid #dce3e0;background:#fff;border-radius:8px;padding:9px}
 .filters input[type=range]{accent-color:#1d6157}
-@media(max-width:600px){.brand{padding:12px 16px}.container{padding:24px 14px 40px}}
 
 .btn{display:inline-flex;align-items:center;justify-content:center;border-radius:8px;padding:9px 16px;font-weight:750;font-size:13px}
 .btn.ghost{border:1px solid #3d5f60;background:transparent;color:#e8f0ee}
@@ -34,12 +33,67 @@ button{cursor:pointer}
 .authCard input:focus{outline:0;border-color:#1d6157}
 .pw{position:relative}.pw input{padding-right:42px}
 .pw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:none;color:#667470;padding:8px}
-.authCard .btn.primary{background:#1d6157;border-color:#1d6157;color:#fff}
-.authCard .btn.primary:hover{background:#174f47}
+.authCard .btn.primary,.panel .btn.primary{background:#1d6157;border-color:#1d6157;color:#fff}
+.authCard .btn.primary:hover,.panel .btn.primary:hover{background:#174f47}
 .full{width:100%;padding:12px;margin-top:6px}
 .msg{font-size:13px;border-radius:8px;padding:10px 12px;margin:4px 0 8px}
 .msg.error{background:#fbeceb;color:#a3392c}
 .msg.success{background:#e8f4ec;color:#2a6446}
 .switch{text-align:center;font-size:13px;color:#667470;margin:18px 0 0}
 .switch button{border:0;background:none;color:#25685f;font-weight:750;padding:0}
-@media(max-width:600px){.brandLink span:last-child{display:none}}
+
+/* ---------- Sidebar (from civic-issue-mock) ---------- */
+.sidebar{position:fixed;inset:0 auto 0 0;width:248px;background:#102a2c;color:#e8f0ee;padding:24px 14px;display:flex;flex-direction:column;z-index:20}
+.sideBrand{display:flex;align-items:center;gap:11px;border:0;background:none;color:inherit;text-align:left;font-size:17px;font-weight:750;line-height:1.15;padding:0 10px 26px}
+.eyebrow{font-size:11px;letter-spacing:.11em;font-weight:800;color:#70807e}
+.sideLabel{color:#77918f;padding:10px 12px}
+.navItem{width:100%;display:flex;align-items:center;gap:11px;border:0;background:transparent;color:#bfd0cd;border-radius:8px;padding:10px 12px;margin:2px 0;text-align:left}
+.navItem:hover,.navItem.active{background:#1b3b3c;color:#fff}
+.workspace{margin-left:248px;min-height:100vh}
+.topbar{height:68px;background:#fff;border-bottom:1px solid #e2e8e5;display:flex;align-items:center;justify-content:flex-end;gap:14px;padding:0 34px;position:sticky;top:0;z-index:10}
+.topbar .btn.ghost{border-color:#d9e1de;color:#334642}
+.topbar .btn.ghost:hover,.topbar .btn.ghost.active{background:#f0f3f2}
+.topbar .btn.primary{background:#1d6157;border-color:#1d6157;color:#fff}
+.topbar .btn.primary:hover,.topbar .btn.primary.active{background:#174f47}
+
+/* ---------- Role access (Maintainer / Administration) ---------- */
+.lockIcon{display:grid;place-items:center;width:40px;height:40px;border-radius:10px;background:#e4f2ec;color:#1f6558;margin-bottom:14px}
+.panel{background:#fff;border:1px solid #e0e6e3;border-radius:12px;padding:26px;box-shadow:0 2px 5px #132f2810}
+.panel h1{margin:8px 0 6px;font-size:30px}
+.panel .sub{margin:0 0 16px;color:#667470}
+
+@media(max-width:900px){
+  .sidebar{width:74px}
+  .sideBrand span:last-child,.sideLabel,.navItem span{display:none}
+  .sideBrand{padding-left:4px}
+  .navItem{justify-content:center}
+  .workspace{margin-left:74px}
+  .topbar{padding:0 18px}
+}
+@media(max-width:600px){
+  .sidebar{top:auto;bottom:0;width:100%;height:62px;flex-direction:row;padding:7px;gap:6px}
+  .sideBrand,.sideLabel{display:none}
+  .navItem{flex:1;width:auto;margin:0;padding:9px;justify-content:center}
+  .navItem span{display:inline;font-size:13px}
+  .workspace{margin-left:0;padding-bottom:62px}
+  .container{padding:24px 14px 40px}
+}
+
+/* ---------- Civic Issue Matchmaker colorful sidebar logo ---------- */
+.sideBrand{
+  width:100%;
+  justify-content:center;
+  padding:0 6px 22px;
+}
+.sidebarLogo{
+  width:190px;
+  max-width:100%;
+  height:auto;
+  display:block;
+  object-fit:contain;
+  border-radius:10px;
+}
+@media(max-width:900px){
+  .sideBrand{padding:0 2px 22px}
+  .sidebarLogo{width:56px}
+}
