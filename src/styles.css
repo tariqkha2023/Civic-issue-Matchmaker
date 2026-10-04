@@ -97,3 +97,48 @@ button{cursor:pointer}
   .sideBrand{padding:0 2px 22px}
   .sidebarLogo{width:56px}
 }
+
+/* ---------- Notifications + My profile (from civic-issue-mock) ---------- */
+.tools{margin-top:20px}
+.navItem{position:relative}
+.count{margin-left:auto;background:#d9efe8;color:#163a37;border-radius:99px;padding:2px 7px;font-size:11px}
+.pageHead{display:flex;align-items:end;justify-content:space-between;gap:12px;padding:42px 44px 22px;background:#fff;border-bottom:1px solid #e4e9e7}
+.pageHead h1{font-size:34px;margin:8px 0}
+.pageHead p{color:#667470;margin:0 0 8px}
+.pageBody{padding:26px 44px 50px;max-width:1100px}
+.pageHead .btn.ghost,.panel .btn.ghost{border-color:#d9e1de;background:#fff;color:#334642}
+.pageHead .btn.ghost:hover{background:#f0f3f2}
+.panel.list{padding:0;overflow:hidden}
+.notification{display:flex;gap:14px;padding:18px;border-bottom:1px solid #edf0ef}
+.notification:last-child{border:0}
+.notification.unread{background:#f2f8f5}
+.notification p{margin:4px 0;color:#5d6d68}
+.notification small{display:block;color:#87938f;margin-top:4px}
+.twoCols{display:grid;grid-template-columns:1.3fr .7fr;gap:18px}
+.form h3,.twoCols h3{margin-top:0}
+.form label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:750;margin:15px 0}
+.form input,.form select{border:1px solid #dce3e0;background:#fff;border-radius:8px;padding:9px}
+.form input:focus,.form select:focus{outline:0;border-color:#1d6157}
+.bigStat{font-size:52px;font-weight:800;color:#286b60;margin:18px 0}
+.check{display:block;margin:13px 0}
+.check input{margin-right:8px}
+@media(max-width:900px){
+  .count{position:absolute;top:2px;right:8px;margin:0;font-size:10px;padding:1px 5px}
+  .twoCols{grid-template-columns:1fr}
+  .pageHead{padding-left:24px;padding-right:24px}
+  .pageBody{padding-left:24px;padding-right:24px}
+}
+@media(max-width:600px){
+  .tools{margin-top:0}
+  .pageHead,.pageBody{padding-left:18px;padding-right:18px}
+  .pageHead h1{font-size:27px}
+  .pageHead{align-items:flex-start}
+}
+
+/* ---------- Top-right notification bell + profile avatar (from civic-issue-mock) ---------- */
+.iconBtn{position:relative;border:0;background:transparent;padding:8px;color:#17232d;border-radius:8px}
+.iconBtn:hover,.iconBtn.active{background:#f0f3f2}
+.dot{position:absolute;right:5px;top:5px;width:7px;height:7px;border-radius:50%;background:#c35b3c}
+.avatar{width:38px;height:38px;border-radius:50%;background:#e6efe9;color:#1d4741;display:grid;place-items:center;font-weight:800;border:0}
+.avatar.small{width:34px;height:34px;font-size:13px}
+.avatar:hover{background:#d5e5dc}
