@@ -1,0 +1,45 @@
+:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#17232d;background:#f6f8f7;font-synthesis:none}
+*{box-sizing:border-box}
+body{margin:0}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.page{min-height:100vh}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:11px;padding:14px 34px;background:#102a2c;color:#e8f0ee}.brandLink{display:flex;align-items:center;gap:11px;border:0;background:none;color:inherit;font-size:17px;font-weight:750;padding:0}.authBtns{display:flex;gap:8px}
+.brandIcon{display:grid;place-items:center;width:38px;height:38px;border-radius:10px;background:#d9efe8;color:#123a37}
+.container{max-width:860px;margin:0 auto;padding:40px 20px 60px}
+.searchBar{display:flex;align-items:center;gap:10px;border:1px solid #dfe6e3;border-radius:12px;padding:14px 16px;background:#fff;box-shadow:0 2px 5px #132f2810;margin-bottom:22px}
+.searchBar:focus-within{border-color:#1d6157}
+.searchBar input{border:0;outline:0;background:transparent;flex:1;font-size:16px}
+.filters{background:#fff;border:1px solid #e0e6e3;border-radius:12px;padding:20px}
+.filterHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.filterHead strong{display:flex;align-items:center;gap:6px}
+.filterHead button{border:0;background:none;color:#287064;font-size:13px;font-weight:700}
+.filterGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:4px 20px}
+.filters label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:750;margin:15px 0}
+.filters select{border:1px solid #dce3e0;background:#fff;border-radius:8px;padding:9px}
+.filters input[type=range]{accent-color:#1d6157}
+@media(max-width:600px){.brand{padding:12px 16px}.container{padding:24px 14px 40px}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;border-radius:8px;padding:9px 16px;font-weight:750;font-size:13px}
+.btn.ghost{border:1px solid #3d5f60;background:transparent;color:#e8f0ee}
+.btn.ghost:hover,.btn.ghost.active{background:#1b3b3c}
+.btn.primary{border:1px solid #d9efe8;background:#d9efe8;color:#123a37}
+.btn.primary:hover,.btn.primary.active{background:#c2e3d8}
+.authWrap{display:grid;place-items:start center;padding:48px 20px 60px}
+.authCard{width:100%;max-width:420px;background:#fff;border:1px solid #e0e6e3;border-radius:14px;padding:30px;box-shadow:0 2px 8px #132f2812}
+.authCard h1{margin:0 0 6px;font-size:26px}
+.authCard .sub{margin:0 0 10px;color:#667470;font-size:14px}
+.authCard label{display:flex;flex-direction:column;gap:7px;font-size:12px;font-weight:750;margin:15px 0}
+.authCard input{border:1px solid #dce3e0;background:#fff;border-radius:8px;padding:11px;width:100%;font-size:14px}
+.authCard input:focus{outline:0;border-color:#1d6157}
+.pw{position:relative}.pw input{padding-right:42px}
+.pw button{position:absolute;right:4px;top:50%;transform:translateY(-50%);border:0;background:none;color:#667470;padding:8px}
+.authCard .btn.primary{background:#1d6157;border-color:#1d6157;color:#fff}
+.authCard .btn.primary:hover{background:#174f47}
+.full{width:100%;padding:12px;margin-top:6px}
+.msg{font-size:13px;border-radius:8px;padding:10px 12px;margin:4px 0 8px}
+.msg.error{background:#fbeceb;color:#a3392c}
+.msg.success{background:#e8f4ec;color:#2a6446}
+.switch{text-align:center;font-size:13px;color:#667470;margin:18px 0 0}
+.switch button{border:0;background:none;color:#25685f;font-weight:750;padding:0}
+@media(max-width:600px){.brandLink span:last-child{display:none}}

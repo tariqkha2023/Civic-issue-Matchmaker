@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 class RepositoryTask:
     source: str
     source_id: str
+    repository: str
     title: str
     description: str
     url: str

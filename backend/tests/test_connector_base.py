@@ -25,13 +25,13 @@ class ExampleConnector(RepositoryConnector):
         return RepositoryTask(
             source="example",
             source_id=str(raw_task["id"]),
+            repository="example/repository",
             title=raw_task["title"],
             description=raw_task.get("description", ""),
             url=raw_task["url"],
             status=raw_task["status"],
             labels=raw_task.get("labels", []),
         )
-
 
 def test_incomplete_connector_cannot_be_created():
     with pytest.raises(TypeError):

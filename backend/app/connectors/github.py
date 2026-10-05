@@ -30,12 +30,13 @@ class GitHubConnector(RepositoryConnector):
         return RepositoryTask(
             source="github",
             source_id=str(raw_task["id"]),
+            repository=f"{self.owner}/{self.repo}",
             title=raw_task["title"],
             description=raw_task.get("body") or "",
             url=raw_task["html_url"],
             status=raw_task["state"],
             labels=labels,
-        )
+            )
 
     def get_next_page(self, response: httpx.Response) -> str | None:
         next_link = response.links.get("next")

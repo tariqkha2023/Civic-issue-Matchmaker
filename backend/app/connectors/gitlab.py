@@ -28,6 +28,7 @@ class GitLabConnector(RepositoryConnector):
         return RepositoryTask(
             source="gitlab",
             source_id=str(raw_task["id"]),
+            repository=self.project,
             title=raw_task["title"],
             description=raw_task.get("description") or "",
             url=raw_task["web_url"],
