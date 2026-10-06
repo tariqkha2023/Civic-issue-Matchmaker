@@ -1,52 +1,135 @@
 # Civic Issue Matchmaker
 
-The halfway milestone is a connected volunteer MVP: register, edit a persistent
-profile, browse imported GitHub/GitLab issues, receive explained recommendations,
-and save tasks to a private shortlist. React/Vite powers the interface; FastAPI
-and SQLAlchemy persist accounts, sessions, profiles, sources, tasks, and saved lists.
-The backend work from `main`/`feat-andre` and the interface from
-`origin/tariq-frontend` are combined here without deleting either application.
+## Quick demo setup — macOS, Windows, and Linux
 
-## Run the MVP
+Run the civic demo locally with **SQLite**. You do not need Docker, PostgreSQL,
+GitHub/GitLab credentials, or an external repository for this walkthrough.
 
-Requires Python 3.11+ and Node 18+ (Node 22 recommended). PostgreSQL 16 via Docker
-is the recommended development database. SQLite is supported for a local demo.
-Run commands from the repository root unless a step explicitly changes directory.
+### 1. Prerequisites and download
+
+Install **Git**, **Python 3.11 or newer**, and **Node.js 18 or newer with npm**
+(Node.js 22 is recommended). On Linux, your distribution may also require the
+`python3-venv` package. On Windows, enable Python's PATH option during installation.
+
+In Terminal (macOS/Linux) or PowerShell (Windows):
+
+```sh
+git clone --branch main https://github.com/tariqkha2023/Civic-issue-Matchmaker.git
+cd Civic-issue-Matchmaker
+```
+
+If you downloaded the ZIP, extract it and open a terminal in the extracted project
+folder instead. All setup commands below begin in this project root.
+
+### 2. Install dependencies
+
+**macOS / Linux — Terminal:**
 
 ```bash
 python3 -m venv backend/.venv
-source backend/.venv/bin/activate
-pip install -r backend/requirements-dev.txt
-cp backend/.env.example backend/.env
-docker compose up -d
+backend/.venv/bin/python -m pip install -r backend/requirements.txt
 npm ci
+cp backend/.env.example backend/.env
 ```
 
-On Windows use `py -3 -m venv backend/.venv`,
-`backend\.venv\Scripts\Activate.ps1`, and
-`Copy-Item backend/.env.example backend/.env` instead of the first two commands
-and `cp`. If Docker is unavailable, set `DATABASE_URL=sqlite:///./civic-dev.db`
-in `backend/.env`; omit `docker compose up -d`. The SQLite file persists locally.
-The initial tables are created automatically on backend startup or source commands.
+**Windows — PowerShell:**
 
-Start the backend in one terminal:
+```powershell
+py -3 -m venv backend/.venv
+.\backend\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt
+npm ci
+Copy-Item backend/.env.example backend/.env
+```
+
+These commands use the virtual environment directly; activation is unnecessary.
+If `py` is unavailable on Windows, use `python -m venv backend/.venv` instead.
+If PowerShell blocks `npm.ps1`, use `npm.cmd ci` and `npm.cmd run dev`.
+For an existing installation, reuse `backend/.env` rather than copying over it.
+
+### 3. Select the demo database
+
+Open **`backend/.env`** in a text editor. Replace its `DATABASE_URL` line with:
+
+```env
+DATABASE_URL=sqlite:///./civic-dev.db
+```
+
+Keep these settings for a demo on the same computer:
+
+```env
+APP_ORIGIN=http://localhost:5173,http://127.0.0.1:5173
+COOKIE_SECURE=false
+```
+
+### 4. Seed the demo and start the backend — terminal 1
+
+“Seed” means populate the database with the **18 fictional civic issues** and
+**three demo accounts**. Run the commands for your operating system:
+
+**macOS / Linux:**
 
 ```bash
 cd backend
-python -m uvicorn app.main:app --reload
+.venv/bin/python -m app.bootstrap
+.venv/bin/python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Start the frontend from the repository root in a second terminal:
+**Windows — PowerShell:**
 
-```bash
+```powershell
+cd backend
+.\.venv\Scripts\python.exe -m app.bootstrap
+.\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+**Save the passwords printed by bootstrap.** Each installation generates its own
+passwords for these accounts:
+
+| Role | Email | What to demonstrate |
+|------|-------|---------------------|
+| Volunteer | `volunteer@civic.demo` | Discover, save, claim, release, complete, and participation history |
+| Maintainer | `maintainer@civic.demo` | Correct issue metadata in Manage issues |
+| Administrator | `administrator@civic.demo` | Assign roles/repositories, toggle sources, and inspect audit activity |
+
+Keep this terminal running. Rerunning bootstrap adds missing samples/accounts
+without duplicating issues or resetting existing passwords; it only prints
+passwords for newly created accounts. Accounts from another computer are not
+copied by cloning the repository.
+
+### 5. Start the frontend — terminal 2
+
+Open a **second terminal in the project root**, then run on any operating system:
+
+```sh
 npm run dev
 ```
 
-Open **http://localhost:5173**. Vite proxies `/api` to the backend on port 8000;
-this keeps authentication cookies and requests on the same browser origin.
-If Vite chooses a different port, free port 5173 or update `APP_ORIGIN` to match.
-Health checks remain at http://127.0.0.1:8000/health and `/health/db`.
-Interactive API documentation is at http://127.0.0.1:8000/docs.
+Open **http://localhost:5173**, log in with a printed demo account, and open
+**Repository** to see Community Care / Civic Issues. Sign out to switch roles.
+Keep both terminals running during the presentation; use **Ctrl+C** to stop them.
+
+For later launches, repeat the backend startup command from `backend` and
+`npm run dev` from the project root. You do not need to seed again. The database
+persists at `backend/civic-dev.db`.
+
+### Troubleshooting and optional LAN access
+
+- **Empty issue list or no demo accounts:** run bootstrap from `backend`, using
+  the same `backend/.env` as the server.
+- **Cannot connect / failed API request:** check that the backend is running on
+  port 8000. Its health URL is http://127.0.0.1:8000/health.
+- **Port already in use:** stop the other process using port 5173 or 8000. Vite
+  requires port 5173 and will not automatically choose a different port.
+- **Show the demo on another device:** Vite already listens on the LAN. Add
+  `http://YOUR_COMPUTER_LAN_IP:5173` to the comma-separated `APP_ORIGIN` list in
+  `backend/.env`, restart the backend, and open that address on the other device.
+  Permit port 5173 through the host firewall if needed. The backend can stay on
+  `127.0.0.1` because Vite proxies its API requests. Both devices must be able to
+  reach each other on the network.
+
+The demo implements accounts/profiles, explained matching, saving, participation,
+repository-scoped metadata corrections, and basic administration. The sections
+below contain walkthroughs and additional development references.
 
 ## Presentation demo: community issues
 
@@ -142,19 +225,18 @@ profile persistence, recommendations, saved tasks, logout/login, and layout over
 
 ## Milestone boundaries
 
-Implemented: volunteer authentication and private persisted profiles; operator source
-configuration; manual atomic GitHub/GitLab imports; explained ranked recommendations;
-search, metadata filters, sorting and pagination; task details and source links;
-private saved lists; validation and responsive layouts.
+Implemented: volunteer authentication and persistent profiles; explained matching,
+search/filter/sort and task details; the fictional civic repository and issue creation;
+private saved lists; atomic claims, release/completion and participation history;
+repository-scoped maintainer corrections with source preservation; basic role/source
+administration and audit activity; responsive role interfaces and automated tests.
+Manual external connector/ingestion code is available for later integration.
 
-Remaining: claims and participation transitions/history, feedback and adaptive
-scoring, repository-scoped maintainer authorization and audited corrections,
-notifications, administrative web tools, scheduled imports/backoff, account
+Remaining: scheduled imports/backoff, live repository demo integration, feedback and
+adaptive scoring, notifications/email, advanced administration/settings, account
 deletion/export, backups, production hosting, full accessibility audit and load tests.
-Privileged demo-login screens and fake notification/profile data are not part of
-the connected application. Production hosting must use HTTPS, `COOKIE_SECURE=true`,
-correct `APP_ORIGIN`, a managed database and deployment-specific controls.
-Schema creation handles this initial MVP; versioned migrations remain future work.
+Additive schema version 1 initializes the demo while preserving existing users/issues.
+Production deployment requires its own HTTPS, database and operational configuration.
 
 ---
 
@@ -588,8 +670,11 @@ To create presentation accounts and seed the fictional civic repository, run fro
 `backend` with the same database configuration as the server:
 
 ```sh
-.venv/bin/python -m app.bootstrap
+python -m app.bootstrap
 ```
+
+Use the operating-system-specific virtual-environment commands in Quick demo setup
+above if your environment is not activated.
 
 This prints a separately generated password for each new account:
 `volunteer@civic.demo`, `maintainer@civic.demo`, and `administrator@civic.demo`.
