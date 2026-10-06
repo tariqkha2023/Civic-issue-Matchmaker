@@ -1,7 +1,6 @@
 from app.connectors.models import RepositoryTask
 from app.database import get_connection
 
-
 CREATE_TASKS_TABLE_SQL = """
 CREATE TABLE IF NOT EXISTS tasks (
     id BIGSERIAL PRIMARY KEY,

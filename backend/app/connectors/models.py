@@ -5,9 +5,9 @@ from dataclasses import dataclass, field
 class RepositoryTask:
     source: str
     source_id: str
-    repository: str
     title: str
     description: str
     url: str
     status: str
     labels: list[str] = field(default_factory=list)
+    repository: str = field(default="", kw_only=True)

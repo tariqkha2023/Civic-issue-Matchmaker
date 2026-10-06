@@ -52,3 +52,31 @@ def client(db_engine, monkeypatch):
     with TestClient(app) as client:
         yield client
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(autouse=True)
+def legacy_storage_database(request, monkeypatch):
+    """Keep the older PostgreSQL storage tests away from application tables."""
+    if request.module.__name__ not in {"test_task_storage", "test_task_aggregation"}:
+        yield
+        return
+    test_url = os.getenv("TEST_DATABASE_URL")
+    if not test_url:
+        pytest.skip("Legacy storage integration requires TEST_DATABASE_URL (PostgreSQL).")
+    import psycopg
+    from psycopg import sql
+
+    from app import task_storage
+
+    schema = "legacy_test_" + uuid4().hex
+    with psycopg.connect(test_url, autocommit=True) as root:
+        root.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
+    def connection():
+        return psycopg.connect(test_url, options=f"-c search_path={schema}")
+    monkeypatch.setattr(task_storage, "get_connection", connection)
+    monkeypatch.setattr(request.module, "get_connection", connection)
+    try:
+        yield
+    finally:
+        with psycopg.connect(test_url, autocommit=True) as root:
+            root.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
