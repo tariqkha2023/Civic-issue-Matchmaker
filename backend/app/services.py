@@ -92,6 +92,9 @@ def change_participation(db, user, task_id, action):
                 409, "Your claim has already changed. Refresh and try again."
             )
     db.add(ParticipationEvent(task_id=task_id, user_id=user.id, action=action))
+    from app.messaging import notify
+
+    notify(db, user.id, f"Task {action}", f"{task.title} was {action}.")
     try:
         db.commit()
     except IntegrityError:
