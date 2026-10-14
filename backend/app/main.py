@@ -23,6 +23,7 @@ from app.accounts import (
 from app.application import router
 from app.demo import DEMO_PATH
 from app.discovery import discover
+from app.messaging import notify, router as messaging_router
 from app.migrations import migrate
 from app.security import hash_password, token_hash, verify_password
 from app.store import (
@@ -98,6 +99,13 @@ def register(
         record_auth(db, request, body.email, "register", False)
         raise HTTPException(409, "An account with that email already exists.") from None
     record_auth(db, request, body.email, "register", True, user.id)
+    notify(
+        db,
+        user.id,
+        "Welcome to Civic Issue Matchmaker",
+        "Complete your profile so we can recommend better-matched tasks.",
+    )
+    db.commit()
     return establish_session(db, user, response)
 
 
@@ -315,6 +323,7 @@ def save_task(
         raise HTTPException(409, "Only open tasks can be saved.")
     if not db.get(SavedTask, (user.id, task_id)):
         db.add(SavedTask(user_id=user.id, task_id=task_id))
+        notify(db, user.id, "Task saved", f"{task.title} was added to Saved tasks.")
         try:
             db.commit()
         except IntegrityError:
@@ -334,3 +343,4 @@ def unsave_task(
 
 
 app.include_router(router)
+app.include_router(messaging_router)

@@ -4,7 +4,15 @@ import os
 import time
 
 from dotenv import load_dotenv
-from sqlalchemy import JSON, Float, ForeignKey, String, UniqueConstraint, create_engine
+from sqlalchemy import (
+    JSON,
+    Float,
+    ForeignKey,
+    String,
+    Text,
+    UniqueConstraint,
+    create_engine,
+)
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 load_dotenv()
@@ -121,6 +129,26 @@ class AuditEntry(Base):
     target: Mapped[str]
     details: Mapped[dict] = mapped_column(JSON, default=dict)
     occurred_at: Mapped[float] = mapped_column(Float, default=time.time)
+
+
+class Notification(Base):
+    __tablename__ = "notifications"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    title: Mapped[str] = mapped_column(String(200))
+    body: Mapped[str] = mapped_column(String(1000), default="")
+    read: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[float] = mapped_column(Float, default=time.time, index=True)
+
+
+class Message(Base):
+    __tablename__ = "messages"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    sender_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    recipient_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    body: Mapped[str] = mapped_column(Text)
+    read: Mapped[bool] = mapped_column(default=False)
+    created_at: Mapped[float] = mapped_column(Float, default=time.time, index=True)
 
 
 class SchemaVersion(Base):

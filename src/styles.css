@@ -211,3 +211,27 @@ a.btn{text-decoration:none}
 .historyList time{font-size:12px;color:#53665f}
 .sectionTitle{margin-top:32px}
 @media(max-width:600px){.sidebar{overflow-x:auto;justify-content:flex-start}.navItem{flex:0 0 70px}.accountName{max-width:60%;font-size:12px}.roleBadge{margin:0}.sidebar .sideBrand{display:none}}
+
+/* ---------- Messages ---------- */
+.messagesLayout{display:grid;grid-template-columns:280px 1fr;padding:0;overflow:hidden;min-height:440px}
+.convoList{list-style:none;margin:0;padding:0;border-right:1px solid #edf0ef;overflow-y:auto;max-height:620px}
+.convo{display:flex;align-items:center;gap:10px;width:100%;border:0;border-bottom:1px solid #edf0ef;background:transparent;padding:14px;text-align:left}
+.convo:hover,.convo.active{background:#f2f8f5}
+.convoText{min-width:0;flex:1}
+.convoText strong{display:block;font-size:14px}
+.convoText small{display:block;color:#87938f;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px}
+.convo .count{margin-left:0;background:#1d6157;color:#fff}
+.thread{display:flex;flex-direction:column;min-width:0}
+.threadHead{margin:0;padding:16px 20px;border-bottom:1px solid #edf0ef}
+.threadEmpty{padding:24px}
+.bubbles{flex:1;overflow-y:auto;max-height:480px;padding:18px 20px;display:flex;flex-direction:column;gap:10px}
+.bubble{max-width:75%;align-self:flex-start;background:#f0f4f2;border-radius:12px 12px 12px 3px;padding:9px 13px;overflow-wrap:anywhere}
+.bubble.mine{align-self:flex-end;background:#1d6157;color:#fff;border-radius:12px 12px 3px 12px}
+.bubble p{margin:0;white-space:pre-wrap;line-height:1.5}
+.bubble small{display:block;margin-top:4px;font-size:11px;opacity:.7}
+.composer{display:flex;gap:10px;padding:14px 20px;border-top:1px solid #edf0ef}
+.composer input{flex:1;border:1px solid #dce3e0;border-radius:8px;padding:10px}
+.composer input:focus{outline:0;border-color:#1d6157}
+.composer .btn.primary{background:#1d6157;border-color:#1d6157;color:#fff;gap:6px}
+.topbar .avatar{cursor:pointer}
+@media(max-width:700px){.messagesLayout{grid-template-columns:1fr}.convoList{border-right:0;border-bottom:1px solid #edf0ef;max-height:200px}}
