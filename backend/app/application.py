@@ -1,5 +1,6 @@
 """Application services: validated requests coordinating role and domain services."""
 
+import time
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -8,6 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.accounts import Profile, current_user, user_view
+from app.projects import settings
 from app.services import (
     assign_roles,
     can_maintain,
@@ -18,6 +20,7 @@ from app.services import (
 from app.store import (
     ActiveClaim,
     AuditEntry,
+    IssueInfo,
     ParticipationEvent,
     Repository,
     Task,
@@ -84,6 +87,8 @@ class MetadataInput(BaseModel):
     topics: list[str] = Field(default_factory=list, max_length=30)
     difficulty: Literal["Beginner", "Intermediate", "Advanced"] | None = None
     effort: float | None = Field(default=None, ge=0, le=10000, allow_inf_nan=False)
+    rationale: str = Field(default="", max_length=1000)
+    expected_source_updated_at: str | None = None
 
     @field_validator("skills", "topics")
     @classmethod
@@ -108,7 +113,27 @@ def maintainer_tasks(user: Actor, db: DB):
 
 @router.put("/maintainer/tasks/{task_id}/metadata")
 def metadata(task_id: int, body: MetadataInput, user: Actor, db: DB):
-    task = correct_metadata(db, user, task_id, body.model_dump())
+    task = db.get(Task, task_id)
+    if task and not can_maintain(db, user, task.repository_id):
+        raise HTTPException(403, "Curator access required for this repository.")
+    if task:
+        info = db.get(IssueInfo, task_id)
+        if (
+            info
+            and body.expected_source_updated_at is not None
+            and body.expected_source_updated_at != info.fields.get("updated_at")
+        ):
+            raise HTTPException(
+                409, "The source changed. Review its current content first."
+            )
+        if (
+            db.get(Repository, task.repository_id).source == "github"
+            and not body.rationale.strip()
+        ):
+            raise HTTPException(422, "Explain the evidence for your correction.")
+    fields = body.model_dump(exclude={"expected_source_updated_at"})
+    fields.update(needs_review=False, reviewed_at=time.time())
+    task = correct_metadata(db, user, task_id, fields)
     return task_view(
         task,
         db.get(Repository, task.repository_id),
@@ -148,6 +173,7 @@ def sources(user: Actor, db: DB):
             "enabled": r.enabled,
             "last_success": r.last_success,
             "error": r.scan_error,
+            **settings(db, r),
         }
         for r in db.scalars(select(Repository).order_by(Repository.id))
     ]

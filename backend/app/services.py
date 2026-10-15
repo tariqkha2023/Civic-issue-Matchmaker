@@ -1,5 +1,7 @@
 """Domain services for authorization, participation and metadata management."""
 
+import time
+
 from fastapi import HTTPException
 from sqlalchemy import delete, select
 from sqlalchemy.exc import IntegrityError
@@ -66,6 +68,10 @@ def change_participation(db, user, task_id, action):
     task = db.scalar(select(Task).where(Task.id == task_id).with_for_update())
     if not task:
         raise HTTPException(404, "Task not found.")
+    if db.get(Repository, task.repository_id).source == "github":
+        raise HTTPException(
+            409, "GitHub issues use nonexclusive contribution tracking, not claims."
+        )
     claim = db.get(ActiveClaim, task_id)
     if action == "claimed":
         if task.status != "open" or not db.get(Repository, task.repository_id).enabled:
@@ -94,8 +100,9 @@ def change_participation(db, user, task_id, action):
     db.add(ParticipationEvent(task_id=task_id, user_id=user.id, action=action))
     from app.messaging import notify
 
-    notify(db, user.id, f"Task {action}", f"{task.title} was {action}.")
     try:
+        db.flush()
+        notify(db, user.id, f"Task {action}", f"{task.title} was {action}.")
         db.commit()
     except IntegrityError:
         db.rollback()
@@ -128,13 +135,25 @@ def correct_metadata(db, user, task_id, fields):
     return task
 
 
-def assign_roles(db, actor, user_id, granted, repository_ids):
+def assign_roles(db, actor, user_id, granted, repository_ids, commit=True):
     require_admin(db, actor)
     # Serialize role changes so concurrent requests cannot remove the last admin.
+    from sqlalchemy import update
+
+    from app.store import JobLease
+
+    # A shared write lock also serializes SQLite role changes.
+    db.execute(
+        update(JobLease)
+        .where(JobLease.name == "role-administration")
+        .values(expires_at=time.time())
+    )
     db.scalars(select(User).order_by(User.id).with_for_update()).all()
     target = db.get(User, user_id)
     if not target:
         raise HTTPException(404, "Account not found.")
+    if target.profile.get("deleted"):
+        raise HTTPException(410, "Deleted accounts cannot receive privileges.")
     if "administrator" in roles(db, target) and "administrator" not in granted:
         admins = db.scalars(
             select(AccountRole).where(AccountRole.role == "administrator")
@@ -167,5 +186,6 @@ def assign_roles(db, actor, user_id, granted, repository_ids):
             },
         )
     )
-    db.commit()
+    if commit:
+        db.commit()
     return target

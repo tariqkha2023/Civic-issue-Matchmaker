@@ -8,10 +8,12 @@ from sqlalchemy import (
     JSON,
     Float,
     ForeignKey,
+    Index,
     String,
     Text,
     UniqueConstraint,
     create_engine,
+    event,
 )
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
@@ -157,11 +159,114 @@ class SchemaVersion(Base):
     applied_at: Mapped[float] = mapped_column(Float, default=time.time)
 
 
+class SourceSettings(Base):
+    __tablename__ = "source_settings"
+    repository_id: Mapped[int] = mapped_column(
+        ForeignKey("repositories.id"), primary_key=True
+    )
+    fields: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class IssueInfo(Base):
+    __tablename__ = "issue_info"
+    task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"), primary_key=True)
+    fields: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class Contribution(Base):
+    __tablename__ = "contributions"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"), index=True)
+    state: Mapped[str]
+    evidence: Mapped[str] = mapped_column(default="")
+    note: Mapped[str] = mapped_column(default="")
+    updated_at: Mapped[float] = mapped_column(Float, default=time.time)
+    events: Mapped[list] = mapped_column(JSON, default=list)
+
+
+Index(
+    "one_active_contribution_per_user_issue",
+    Contribution.user_id,
+    Contribution.task_id,
+    unique=True,
+    sqlite_where=Contribution.state.in_(["interested", "in_progress", "submitted"]),
+    postgresql_where=Contribution.state.in_(["interested", "in_progress", "submitted"]),
+)
+
+
+class RelevanceFeedback(Base):
+    __tablename__ = "relevance_feedback"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"), primary_key=True)
+    relevant: Mapped[bool]
+    explanation: Mapped[str] = mapped_column(default="")
+    updated_at: Mapped[float] = mapped_column(Float, default=time.time)
+
+
+class AccountSettings(Base):
+    __tablename__ = "account_settings"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    preferences: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class ScanRun(Base):
+    __tablename__ = "scan_runs"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    repository_id: Mapped[int] = mapped_column(
+        ForeignKey("repositories.id"), index=True
+    )
+    started_at: Mapped[float] = mapped_column(Float, default=time.time)
+    finished_at: Mapped[float | None]
+    status: Mapped[str]
+    count: Mapped[int] = mapped_column(default=0)
+    detail: Mapped[str] = mapped_column(default="")
+
+
+class JobLease(Base):
+    __tablename__ = "job_leases"
+    name: Mapped[str] = mapped_column(primary_key=True)
+    expires_at: Mapped[float] = mapped_column(Float, default=0)
+
+
+class EventDelivery(Base):
+    __tablename__ = "event_deliveries"
+    key: Mapped[str] = mapped_column(primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
+    status: Mapped[str]
+    created_at: Mapped[float] = mapped_column(Float, default=time.time)
+
+
+class IssueEnrichment(Base):
+    __tablename__ = "issue_enrichments"
+    task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"), primary_key=True)
+    content_hash: Mapped[str]
+    model: Mapped[str]
+    fields: Mapped[dict] = mapped_column(JSON)
+    cost: Mapped[float] = mapped_column(Float, default=0)
+    updated_at: Mapped[float] = mapped_column(Float, default=time.time)
+
+
+class EnrichmentRun(Base):
+    __tablename__ = "enrichment_runs"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    fields: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class StagedIssue(Base):
+    __tablename__ = "staged_issues"
+    repository_id: Mapped[int] = mapped_column(
+        ForeignKey("repositories.id"), primary_key=True
+    )
+    source_id: Mapped[str] = mapped_column(primary_key=True)
+    fields: Mapped[dict] = mapped_column(JSON)
+
+
 def make_engine(url=None):
     url = url or os.getenv("DATABASE_URL", "sqlite:///./civic-dev.db")
     if url.startswith("postgresql://"):
         url = url.replace("postgresql://", "postgresql+psycopg://", 1)
-    return create_engine(
+    result = create_engine(
         url,
         **(
             {"connect_args": {"check_same_thread": False}}
@@ -169,6 +274,14 @@ def make_engine(url=None):
             else {}
         ),
     )
+
+    if url.startswith("sqlite"):
+
+        @event.listens_for(result, "connect")
+        def configure_sqlite(connection, _):
+            connection.execute("PRAGMA busy_timeout=30000")
+
+    return result
 
 
 engine = make_engine()
