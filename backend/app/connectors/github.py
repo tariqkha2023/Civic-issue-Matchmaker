@@ -38,7 +38,7 @@ class GitHubConnector(RepositoryConnector):
             url=raw_task["html_url"],
             status=raw_task["state"],
             labels=labels,
-            )
+        )
 
     def get_next_page(self, response: httpx.Response) -> str | None:
         next_link = response.links.get("next")
