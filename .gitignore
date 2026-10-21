@@ -27,3 +27,10 @@ playwright-report/
 test-results/
 
 .e2e/
+
+# Private presentation preparation
+/presentation-cheat-sheets/
+
+# Private runtime backups
+backups/
+*.tmp

@@ -19,7 +19,10 @@ STAFF = {"maintainer", "administrator"}
 
 def notify(db: Session, user_id: int, title: str, body: str = "") -> None:
     """Queue a notification. The caller commits it with its own transaction."""
-    db.add(Notification(user_id=user_id, title=title[:200], body=body[:1000]))
+    from uuid import uuid4
+
+    from app.events import deliver
+    deliver(db, user_id, "event:" + uuid4().hex, title, body, "activity")
 
 
 def notification_view(n: Notification):
@@ -154,6 +157,10 @@ def thread(other_id: int, user: Actor, db: DB):
     other = db.get(User, other_id)
     if not other or other.id == user.id:
         raise HTTPException(404, "Conversation not found.")
+    if other.id not in partner_ids(db, user) and not STAFF & (
+        set(roles(db, user)) | set(roles(db, other))
+    ):
+        raise HTTPException(403, "This conversation is not available.")
     db.execute(
         update(Message)
         .where(
@@ -206,7 +213,8 @@ def send_message(body: MessageInput, user: Actor, db: DB):
     )
     if not allowed:
         raise HTTPException(
-            403, "You can message maintainers, administrators, or people who wrote to you."
+            403,
+            "You can message maintainers, administrators, or people who wrote to you.",
         )
     message = Message(sender_id=user.id, recipient_id=recipient.id, body=body.body)
     db.add(message)

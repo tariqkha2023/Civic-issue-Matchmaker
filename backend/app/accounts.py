@@ -48,6 +48,9 @@ class Profile(BaseModel):
     difficulty: Literal["Beginner", "Intermediate", "Advanced"] = "Beginner"
     hours: float = Field(default=0, ge=0, le=168)
     repositories: list[str] = Field(default_factory=list, max_length=30)
+    github_username: str = Field(
+        default="", max_length=39, pattern=r"^$|^[A-Za-z0-9][A-Za-z0-9-]{0,38}$"
+    )
 
     @field_validator("skills", "interests", "repositories")
     @classmethod
@@ -75,7 +78,12 @@ def current_user(request: Request, db: Annotated[Session, Depends(get_db)]):
         raise HTTPException(401, "Session expired. Please sign in again.")
     session.last_activity = time.time()
     db.commit()
-    return db.get(User, session.user_id)
+    user = db.get(User, session.user_id)
+    if not user or user.profile.get("deleted"):
+        raise HTTPException(401, "Account no longer available.")
+    request.state.authorization_actor = user.id
+    request.state.authorization_db = db
+    return user
 
 
 def user_view(user, db):
