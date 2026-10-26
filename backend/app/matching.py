@@ -16,7 +16,16 @@ SKILLS = [
     "java",
     "go",
     "rust",
+    "perl",
+    "ruby",
+    "testing",
+    "translation",
+    "docker",
+    "devops",
+    "postgresql",
+    "fastapi",
 ]
+SCORE_VERSION = "evidence-v4"
 LEVELS = ["Beginner", "Intermediate", "Advanced"]
 
 
@@ -26,7 +35,15 @@ def derive_metadata(labels):
         skill for skill in SKILLS if skill in lowered or f"skill:{skill}" in lowered
     ]
     difficulty = None
-    if "good first issue" in lowered or "beginner" in lowered:
+    if any(
+        label in lowered
+        for label in [
+            "good first issue",
+            "beginner",
+            "new contributor opportunity",
+            "suitable for volunteers",
+        ]
+    ):
         difficulty = "Beginner"
     for level in LEVELS:
         if level.lower() in lowered or f"difficulty:{level.lower()}" in lowered:
@@ -53,27 +70,36 @@ def derive_metadata(labels):
     }
 
 
-def score(profile, metadata, repository):
+def score(profile, metadata, repository, history=None):
     factors = []
+    if not metadata.get("skills") or not profile.get("skills"):
+        return None, [
+            "Limited information: issue-specific skills and your profile skills are needed for a fit score.",
+            "Topic or repository preference alone does not establish technical fit.",
+        ]
     skills = {s.lower() for s in profile.get("skills", [])}
     interests = {s.lower() for s in profile.get("interests", [])}
     required = set(metadata["skills"])
     if required:
-        fit = len(skills & required) / len(required)
+        weights = {s: metadata.get("skill_weights", {}).get(s, 1.0) for s in required}
+        total_skill_weight = sum(weights.values())
+        fit = sum(weights[s] for s in skills & required) / total_skill_weight
+        reliability = total_skill_weight / len(required)
         factors.append(
             (
-                0.35,
+                0.60 * reliability,
                 fit,
-                f"Skills: {len(skills & required)} of {len(required)} required skills match.",
+                f"Skills: {len(skills & required)} of {len(required)} assessed skills match.",
             )
         )
+    inferred = [s for s in required if metadata.get("skill_weights", {}).get(s, 1) < 1]
     if metadata["topics"]:
         fit = len(interests & {s.lower() for s in metadata["topics"]}) / len(
             metadata["topics"]
         )
         factors.append(
             (
-                0.20,
+                0.15,
                 fit,
                 "Interests align with this topic."
                 if fit
@@ -90,7 +116,7 @@ def score(profile, metadata, repository):
         ) / 2
         factors.append(
             (
-                0.15,
+                0.20,
                 fit,
                 f"Difficulty is {metadata['difficulty']}; your experience is {LEVELS[experience]} and preference is {LEVELS[preference]}.",
             )
@@ -101,34 +127,49 @@ def score(profile, metadata, repository):
         fit = min(1, hours / effort) if effort else 1
         factors.append(
             (
-                0.15,
+                0.05,
                 fit,
                 f"Estimated effort: {effort:g} hours; your availability: {hours:g} hours/week.",
             )
         )
-    if profile.get("repositories"):
-        fit = float(repository.lower() in profile["repositories"])
-        factors.append(
-            (
-                0.05,
-                fit,
-                "Matches a preferred repository."
-                if fit
-                else "Outside your preferred repositories.",
-            )
-        )
+    if repository.lower() in profile.get("repositories", []):
+        preference = "Preferred repository; used to break equal-score ties, not inflate technical fit."
+    else:
+        preference = None
     total = sum(w for w, _, _ in factors)
     result = (
-        round(100 * sum(w * value for w, value, _ in factors) / total, 1)
-        if total
-        else None
+        round(100 * sum(w * value for w, value, _ in factors), 1) if total else None
     )
     explanations = [message for _, _, message in factors]
+    explanations.append(
+        f"Evidence-backed score out of 100; available evidence supports at most {100 * total:g} points. Unassessed factors remain unknown."
+    )
+    if inferred:
+        explanations.append(
+            "AI-inferred skills carry half the evidence weight of stated or curator-reviewed skills: "
+            + ", ".join(sorted(inferred))
+            + "."
+        )
+    missing = sorted(required - skills)
+    if missing:
+        explanations.append(
+            "Skills not listed in your profile: " + ", ".join(missing) + "."
+        )
+    if preference:
+        explanations.append(preference)
+    if history and history.get("relevance") is not None:
+        explanations.append(
+            "Your relevance feedback helps break equal-score ties; it does not change assessed skill fit."
+        )
+    if history and history.get("completed"):
+        explanations.append(
+            "Your completed activity helps break equal-score ties; completion is self-reported."
+        )
     if len(explanations) < 2:
         explanations.extend(
             [
                 "Missing task metadata limits confidence in this recommendation.",
-                "Only supplied or label-derived metadata contributes to the score.",
+                "Only source, validated AI, or curator-supplied requirements contribute to the score.",
             ][: 2 - len(explanations)]
         )
     return result, explanations
