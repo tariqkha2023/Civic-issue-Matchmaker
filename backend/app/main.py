@@ -21,13 +21,18 @@ from app.accounts import (
     user_view,
 )
 from app.application import router
+from app.contributions import router as contributions_router
 from app.demo import DEMO_PATH
 from app.discovery import discover
-from app.messaging import notify, router as messaging_router
+from app.messaging import notify
+from app.messaging import router as messaging_router
 from app.migrations import migrate
+from app.privacy import router as privacy_router
 from app.security import hash_password, token_hash, verify_password
+from app.source_api import router as source_router
 from app.store import (
     LoginSession,
+    ParticipationEvent,
     Repository,
     SavedTask,
     Task,
@@ -41,7 +46,19 @@ from app.views import task_view
 @asynccontextmanager
 async def lifespan(app):
     migrate(engine)
+    from app.projects import configure_sources
+
+    with Session(engine) as db:
+        configure_sources(db)
+    worker = None
+    if os.getenv("ENABLE_WORKER", "true").lower() == "true":
+        from app.worker import start
+
+        worker = start(engine)
     yield
+    if worker:
+        worker[0].set()
+        worker[1].join(timeout=2)
 
 
 app = FastAPI(lifespan=lifespan)
@@ -57,6 +74,22 @@ async def reject_cross_site_writes(request: Request, call_next):
         ):
             return Response("Cross-site request rejected", status_code=403)
     response = await call_next(request)
+    if response.status_code == 403 and request.method not in {"GET", "HEAD", "OPTIONS"}:
+        audit_db = getattr(request.state, "authorization_db", None)
+        actor_id = getattr(request.state, "authorization_actor", None)
+        if audit_db is not None and actor_id is not None:
+            from app.store import AuditEntry
+
+            audit_db.rollback()
+            audit_db.add(
+                AuditEntry(
+                    actor_id=actor_id,
+                    action="authorization.denied",
+                    target=request.url.path,
+                    details={},
+                )
+            )
+            audit_db.commit()
     response.headers["X-Content-Type-Options"] = "nosniff"
     response.headers["Cache-Control"] = "no-store"
     return response
@@ -212,6 +245,11 @@ def create_demo_issue(
     user: Annotated[User, Depends(current_user)],
     db: Annotated[Session, Depends(get_db)],
 ):
+    if os.getenv("APP_DEMO", "false").lower() != "true":
+        raise HTTPException(
+            403,
+            "Create issues on the source GitHub project; local creation is only a test fixture.",
+        )
     task, repo = task_services.create_demo_issue(db, user, body)
     return task_view(task, repo, profile=user.profile, db=db, user=user)
 
@@ -222,6 +260,10 @@ def create_manual_task(
     user: Annotated[User, Depends(current_user)],
     db: Annotated[Session, Depends(get_db)],
 ):
+    if os.getenv("APP_DEMO", "false").lower() != "true":
+        raise HTTPException(
+            403, "Local issue creation is disabled. Open GitHub to contribute."
+        )
     task, repo = task_services.create_manual_task(db, user, body)
     return task_view(task, repo, profile=user.profile, db=db, user=user)
 
@@ -259,6 +301,7 @@ def recommendations(
     sort: Literal["compatibility", "recency", "difficulty", "effort"] = "compatibility",
     page: int = Query(1, ge=1),
     page_size: int = Query(12, ge=1, le=100),
+    assignment: Literal["", "assigned", "unassigned"] = "",
 ):
     return discover(
         db,
@@ -273,6 +316,7 @@ def recommendations(
         sort,
         page,
         page_size,
+        assignment,
     )
 
 
@@ -307,7 +351,13 @@ def saved_tasks(
         .where(SavedTask.user_id == user.id)
         .order_by(SavedTask.saved_at.desc())
     )
-    return [task_view(task, repo, True, user.profile, db, user) for task, repo in rows]
+    from app.views import projection_context
+
+    context = projection_context(db, user)
+    return [
+        task_view(task, repo, True, user.profile, db, user, context)
+        for task, repo in rows
+    ]
 
 
 @app.put("/api/me/saved/{task_id}", status_code=204)
@@ -323,8 +373,10 @@ def save_task(
         raise HTTPException(409, "Only open tasks can be saved.")
     if not db.get(SavedTask, (user.id, task_id)):
         db.add(SavedTask(user_id=user.id, task_id=task_id))
-        notify(db, user.id, "Task saved", f"{task.title} was added to Saved tasks.")
+        db.add(ParticipationEvent(user_id=user.id, task_id=task_id, action="saved"))
         try:
+            db.flush()
+            notify(db, user.id, "Task saved", f"{task.title} was added to Saved tasks.")
             db.commit()
         except IntegrityError:
             db.rollback()  # A concurrent request already saved this task.
@@ -338,9 +390,15 @@ def unsave_task(
 ):
     saved = db.get(SavedTask, (user.id, task_id))
     if saved:
+        db.add(ParticipationEvent(user_id=user.id, task_id=task_id, action="unsaved"))
         db.delete(saved)
         db.commit()
 
 
 app.include_router(router)
 app.include_router(messaging_router)
+
+
+app.include_router(contributions_router)
+app.include_router(privacy_router)
+app.include_router(source_router)
