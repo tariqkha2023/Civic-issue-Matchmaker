@@ -26,8 +26,8 @@ export default function Auth({ register, go, onSuccess }) {
   };
   const fieldError = key => errors[key] && <span id={key + '-error'} className="fieldError">{errors[key]}</span>;
   return <section className="authWrap"><form className="authCard" noValidate onSubmit={submit}>
-    <h1>{register ? 'Create your account' : 'Welcome back'}</h1><p className="sub">Find civic tasks that fit your skills and time.</p>
-    {register && <p className="privacyNotice">Your email and volunteer profile are stored to personalize recommendations. Your profile and saved list are private to your account. Never include sensitive personal information in profile fields.</p>}
+    <h1>{register ? 'Create your account' : 'Welcome back'}</h1><p className="sub">Find civic-tech issues that fit your technical skills and time.</p>
+    {register && <p className="privacyNotice">Your email and contributor profile are stored to personalize recommendations. Your profile and saved list are private to your account. Never include sensitive personal information in profile fields.</p>}
     {register && <label htmlFor="name">Display name<input id="name" maxLength={100} value={form.name} onChange={e => change('name', e.target.value)} autoComplete="name" aria-invalid={!!errors.name} aria-describedby="name-error"/>{fieldError('name')}</label>}
     <label htmlFor="email">Email<input id="email" type="email" maxLength={254} value={form.email} onChange={e => change('email', e.target.value)} autoComplete="email" aria-invalid={!!errors.email} aria-describedby="email-error"/>{fieldError('email')}</label>
     <label htmlFor="password">Password<PasswordInput id="password" invalid={!!errors.password} describedBy="password-error" value={form.password} onChange={v => change('password', v)} autoComplete={register ? 'new-password' : 'current-password'}/>{fieldError('password')}</label>

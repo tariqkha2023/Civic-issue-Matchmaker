@@ -31,7 +31,7 @@ export default function Notifications({ onError, onChanged }) {
     <section className="pageBody">
       {error && <p className="msg error" role="alert">{error}</p>}
       {!items ? <p role="status">Loading notifications…</p> : items.length === 0 ? <p className="panel">You have no notifications yet.</p> :
-        <div className="panel list">{items.map(n => <div key={n.id} className={'notification' + (n.read ? '' : ' unread')} onClick={() => markOne(n)}>
-          <Bell size={19}/><div><strong>{n.title}</strong><p>{n.body}</p><small>{ago(n.created_at)}</small></div></div>)}</div>}
+        <div className="panel list">{items.map(n => <button type="button" key={n.id} className={'notification' + (n.read ? '' : ' unread')} onClick={() => markOne(n)}>
+          <Bell size={19}/><div><strong>{n.title}</strong><p>{n.body}</p><small>{ago(n.created_at)}</small></div></button>)}</div>}
     </section></>;
 }

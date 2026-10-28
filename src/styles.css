@@ -235,3 +235,14 @@ a.btn{text-decoration:none}
 .composer .btn.primary{background:#1d6157;border-color:#1d6157;color:#fff;gap:6px}
 .topbar .avatar{cursor:pointer}
 @media(max-width:700px){.messagesLayout{grid-template-columns:1fr}.convoList{border-right:0;border-bottom:1px solid #edf0ef;max-height:200px}}
+.feedbackBox{margin-top:20px;padding-top:12px;border-top:1px solid #dce3e0}
+textarea{font:inherit;width:100%;max-width:100%;border:1px solid #c2cdc7;border-radius:8px;padding:10px;resize:vertical}
+.taskCard>label{display:flex;flex-direction:column;gap:8px;margin:15px 0}
+.taskCard>label input,.panel input{min-width:0;max-width:100%}
+button.notification{display:flex;width:100%;text-align:left;border:0;border-bottom:1px solid #dce3e0;background:white;color:inherit;font:inherit;cursor:pointer}
+button.notification.unread{background:#edf5f1}
+.sidebar{overflow-y:auto}
+details{margin-top:18px}summary{cursor:pointer;color:#19594f;font-weight:600}
+@media(max-width:600px){.sidebar{overflow-y:hidden}.topbar{gap:6px}.topbar .accountName{max-width:35%}.topbar .btn{padding:8px}.topbar .avatar{display:none}}
+.form label.checkLabel{flex-direction:row;align-items:center;justify-content:flex-start;gap:10px;text-align:left}
+.form label.checkLabel input[type=checkbox]{width:16px;height:16px;padding:0;margin:0;flex:0 0 16px}

@@ -1,21 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { api } from '../api';
-
-export default function Participation({ onError }) {
-  const [data, setData] = useState(null), [error, setError] = useState(''), [busy, setBusy] = useState(null);
-  const load = () => api('/me/participation').then(setData).catch(e => { setError(e.message); if (e.status === 401) onError(e); });
-  useEffect(() => { load(); }, []);
-  const change = async (id, action) => {
-    setBusy(id); setError('');
-    try { await api(`/tasks/${id}/participation`, { method: 'POST', body: { action } }); await load(); }
-    catch (e) { setError(e.message); if (e.status === 401) onError(e); }
-    finally { setBusy(null); }
-  };
-  return <><section className="pageHead"><div><span className="eyebrow">YOUR CONTRIBUTIONS</span><h1>Participation</h1><p>Manage your claimed tasks and review your contribution history.</p></div></section><section className="pageBody discovery">
-    {error && <p className="msg error" role="alert">{error}</p>}
-    {!data ? <p role="status">Loading participation…</p> : <><h2>Active claims</h2>{data.active.length === 0 && <p className="panel">No active claims. Claim an available issue from Discover.</p>}
-      {data.active.map(t => <article className="panel taskCard" key={t.id}><h3>{t.title}</h3><p>{t.metadata.location || t.repository}</p><div className="taskActions"><button className="btn primary" disabled={busy === t.id} onClick={() => change(t.id, 'completed')}>Mark complete</button><button className="btn secondary" disabled={busy === t.id} onClick={() => change(t.id, 'released')}>Release task</button></div></article>)}
-      <h2 className="sectionTitle">Participation history</h2>{data.events.length === 0 && <p className="muted">Your claims, releases, and completions will appear here.</p>}
-      <ol className="historyList">{data.events.map(e => <li className="panel" key={e.id}><strong>{e.title}</strong><span className="tags"><span>{e.action}</span></span><time>{new Date(e.occurred_at * 1000).toLocaleString()}</time></li>)}</ol></>}
-  </section></>;
+const labels={interested:'Interested',in_progress:'In progress',submitted:'Submitted',completed:'Completed',withdrawn:'Withdrawn'};
+function Activity({ item, onUpdate, onRemove, busy }) {
+  const [confirmRemove,setConfirmRemove]=useState(false);
+  const [evidence,setEvidence]=useState(item.evidence),[note,setNote]=useState(item.note);
+  const next={interested:['in_progress','withdrawn'],in_progress:['submitted','completed','withdrawn'],submitted:['in_progress','completed','withdrawn'],withdrawn:['interested'],completed:[]}[item.state];
+  return <article className="panel taskCard"><span className="eyebrow">{item.repository}</span><h2>{item.title}</h2><div className="tags"><span>{labels[item.state]}</span><span>Source: {item.source_state}</span><span>{item.source_enabled?'Source enabled':'Source disabled'}</span></div>{item.url&&<p><a href={item.url} target="_blank" rel="noopener noreferrer">Open source issue ↗</a></p>}<p className="muted">{item.completion_basis}</p>{next.length>0&&<><label>GitHub submission URL<input value={evidence} maxLength={2000} placeholder="https://github.com/owner/repo/pull/123" onChange={e=>setEvidence(e.target.value)}/></label><label>Contribution note<textarea value={note} maxLength={1000} onChange={e=>setNote(e.target.value)} placeholder="Describe the work; required for self-reported completion"/></label><div className="taskActions">{next.map(state=><button key={state} className="btn secondary" disabled={busy} onClick={()=>onUpdate(item,{state,evidence,note,expected_version:item.updated_at})}>{{in_progress:'Start work',submitted:'Add submission',completed:'Mark contribution complete',withdrawn:'Stop tracking',interested:'Resume tracking'}[state]}</button>)}</div></>}{item.evidence&&<p>Recorded evidence: <a href={item.evidence} target="_blank" rel="noopener noreferrer">{item.evidence}</a></p>}{item.note&&<p>{item.note}</p>}<div className="taskActions">{confirmRemove?<><p>Remove this contribution and its local history?</p><button className="btn secondary" disabled={busy} onClick={()=>onRemove(item)}>Confirm removal</button><button className="btn ghost" disabled={busy} onClick={()=>setConfirmRemove(false)}>Cancel</button></>:<button className="btn ghost" disabled={busy} onClick={()=>setConfirmRemove(true)}>Remove contribution</button>}</div><details><summary>Activity history</summary><ol className="historyList">{item.events.map((event,i)=><li key={i}><strong>{labels[event.state]||event.state}</strong> · {new Date(event.time*1000).toLocaleString()}<span>{event.note||event.basis}</span></li>)}</ol></details></article>;
+}
+export default function Participation({onError}) {
+  const [items,setItems]=useState(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[bookmarks,setBookmarks]=useState([]);
+  const load=()=>api('/me/contributions').then(setItems);
+  const fail=e=>{setError(e.message);if(e.status===401)onError(e);};
+  useEffect(()=>{load().catch(fail);api('/me/participation').then(d=>setBookmarks(d.events.filter(e=>['saved','unsaved'].includes(e.action)))).catch(fail);},[]);
+  const update=async(item,body)=>{setBusy(true);setError('');try{await api(`/me/contributions/${item.id}`,{method:'PUT',body});await load();}catch(e){fail(e);}finally{setBusy(false);}};
+  const remove=async item=>{setBusy(true);setError('');try{await api(`/me/contributions/${item.id}?`+new URLSearchParams({expected_version:item.updated_at}),{method:'DELETE'});await load();}catch(e){fail(e);}finally{setBusy(false);}};
+  return <><section className="pageHead"><div><span className="eyebrow">YOUR CONTRIBUTION JOURNEY</span><h1>My contributions</h1><p>Local tracking does not assign or close GitHub issues. Completion is self-reported.</p></div></section><section className="pageBody discovery">{error&&<p className="msg error" role="alert">{error}</p>}{!items?<p role="status">Loading contributions…</p>:!items.length?<p className="panel">Track an open issue from Discover to start your contribution history.</p>:items.map(item=><Activity key={item.id+':'+item.updated_at} item={item} onUpdate={update} onRemove={remove} busy={busy}/>)}<details><summary>Bookmark history</summary><ol className="historyList">{bookmarks.map(b=><li key={b.id}><strong>{b.title}</strong><span>{b.action} · {new Date(b.occurred_at*1000).toLocaleString()}</span></li>)}</ol></details></section></>;
 }

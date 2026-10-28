@@ -4,7 +4,7 @@ import { api } from '../api';
 const levels = ['Beginner', 'Intermediate', 'Advanced'];
 const list = value => [...new Set(value.split(',').map(v => v.trim()).filter(Boolean))];
 export default function Profile({ user, onSaved, onError }) {
-  const [form, setForm] = useState(() => ({ ...user.profile, skills: user.profile.skills.join(', '), interests: user.profile.interests.join(', '), repositories: user.profile.repositories.join(', ') }));
+  const [form, setForm] = useState(() => ({ ...user.profile, github_username: user.profile.github_username || '', skills: user.profile.skills.join(', '), interests: user.profile.interests.join(', '), repositories: user.profile.repositories.join(', ') }));
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -27,13 +27,13 @@ export default function Profile({ user, onSaved, onError }) {
     } catch (e) { setError(e.message); if (e.status === 401) onError(e); }
     finally { setBusy(false); }
   };
-  return <><section className="pageHead"><div><span className="eyebrow">YOUR MATCHING PREFERENCES</span><h1>Volunteer profile</h1><p>Tell us what you know, what interests you, and how much time you have.</p></div></section>
+  return <><section className="pageHead"><div><span className="eyebrow">YOUR MATCHING PREFERENCES</span><h1>Contributor profile</h1><p>Tell us what you know, what interests you, and how much time you have.</p></div></section>
     <section className="pageBody"><form className="panel form" noValidate onSubmit={save}>
       <div className="profileGrid">
-      {[['name', 'Display name'], ['skills', 'Skills (comma separated)'], ['interests', 'Interests / civic topics (comma separated)'], ['repositories', 'Preferred repositories (owner/repo, comma separated)']].map(([key, label]) => <label key={key}>{label}<input value={form[key]} onChange={e => update(key, e.target.value)} aria-invalid={!!errors[key]} placeholder={key === 'skills' ? 'Food preparation, Communication, Gardening' : key === 'interests' ? 'Food security, Environment, Transportation' : ''}/>{errors[key] && <span className="fieldError">{errors[key]}</span>}</label>)}
+      {[['name', 'Display name'], ['skills', 'Skills (comma separated)'], ['interests', 'Interests / civic topics (comma separated)'], ['repositories', 'Preferred repositories (owner/repo, comma separated)']].map(([key, label]) => <label key={key}>{label}<input value={form[key]} onChange={e => update(key, e.target.value)} aria-invalid={!!errors[key]} placeholder={key === 'skills' ? 'Python, JavaScript, Documentation' : key === 'interests' ? 'Open mapping, Humanitarian mapping, Public infrastructure' : ''}/>{errors[key] && <span className="fieldError">{errors[key]}</span>}</label>)}
       {[['level', 'Experience level'], ['difficulty', 'Preferred difficulty']].map(([key, label]) => <label key={key}>{label}<select value={form[key]} onChange={e => update(key, e.target.value)}>{levels.map(level => <option key={level}>{level}</option>)}</select></label>)}
       <label>Weekly availability (hours)<input type="number" min="0" max="168" step="0.5" value={form.hours} onChange={e => update('hours', e.target.value)} aria-invalid={!!errors.hours}/>{errors.hours && <span className="fieldError">{errors.hours}</span>}</label>
-      </div><p className="muted">Profile information is private to your account. Fields without task metadata do not affect compatibility scores.</p>
+      <label>GitHub username (self-reported, not verified)<input maxLength={39} value={form.github_username} onChange={e=>update('github_username',e.target.value)}/></label></div><p className="muted">Profile information is private to your account. Fields without task metadata do not affect compatibility scores.</p>
       {error && <p className="msg error" role="alert">{error}</p>}{message && <p className="msg success" role="status">{message}</p>}
       <button className="btn primary" disabled={busy}>{busy ? 'Saving…' : 'Save profile'}</button>
     </form></section></>;
