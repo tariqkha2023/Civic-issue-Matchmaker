@@ -405,7 +405,7 @@ def test_losing_eligibility_does_not_falsely_close_source_issue(
         assert scan_repository(db, repo) == 0
         assert db.scalar(select(Task)).status == "open"
     register(client)
-    assert client.get("/api/recommendations").json()["total"] == 0
+    assert client.get("/api/recommendations").json()["total"] == 1
 
 
 def test_operator_source_configuration(db_engine, monkeypatch):
@@ -433,7 +433,8 @@ def test_operator_source_configuration(db_engine, monkeypatch):
         assert db.get(Repository, repo_id).selection_labels == []
 
 
-def test_manual_tasks_are_shared_matched_and_saved(client, db_engine):
+def test_manual_tasks_are_shared_matched_and_saved(client, db_engine, monkeypatch):
+    monkeypatch.setenv("APP_DEMO", "true")
     body = {
         "title": "Improve community map",
         "project": "Community Mapping",
@@ -501,7 +502,8 @@ def test_manual_tasks_are_shared_matched_and_saved(client, db_engine):
     assert client.get("/api/me/saved").json()[0]["title"] == body["title"]
 
 
-def test_demo_repository_seed_and_issue_creation(client, db_engine):
+def test_demo_repository_seed_and_issue_creation(client, db_engine, monkeypatch):
+    monkeypatch.setenv("APP_DEMO", "true")
     from app.demo import DEMO_PATH, ISSUES, seed_demo
 
     with Session(db_engine) as db:

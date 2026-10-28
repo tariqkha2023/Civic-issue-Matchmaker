@@ -18,6 +18,7 @@ from app.store import (
     MaintainerAccess,
     MetadataCorrection,
     ParticipationEvent,
+    Repository,
     Task,
     User,
     make_engine,
@@ -76,6 +77,7 @@ def test_maintainer_scope_correction_preserves_source_and_matching(client, db_en
         "topics": ["Environment"],
         "difficulty": "Beginner",
         "effort": 1,
+        "rationale": "Reviewed the issue requirements.",
     }
     assert client.get("/api/maintainer/tasks").json() == []
     assert (
@@ -169,6 +171,9 @@ def test_admin_assignments_source_controls_and_last_admin(client, db_engine):
 
 def test_claims_release_completion_and_private_history(client, db_engine):
     ids = seed(db_engine)
+    with Session(db_engine) as db:
+        db.get(Repository, db.get(Task, ids[0]).repository_id).source = "manual"
+        db.commit()
     register(client)
     path = f"/api/tasks/{ids[0]}/participation"
     assert client.post(path, json={"action": "claimed"}).status_code == 200
@@ -243,6 +248,8 @@ def test_concurrent_claims_have_only_one_winner(tmp_path):
     migrate(engine)
     ids = seed(engine)
     with Session(engine) as db:
+        db.get(Repository, db.get(Task, ids[0]).repository_id).source = "manual"
+        db.commit()
         db.add_all(
             [
                 User(email=f"{i}@example.com", password_hash="unused", profile={})

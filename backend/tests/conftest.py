@@ -62,7 +62,9 @@ def legacy_storage_database(request, monkeypatch):
         return
     test_url = os.getenv("TEST_DATABASE_URL")
     if not test_url:
-        pytest.skip("Legacy storage integration requires TEST_DATABASE_URL (PostgreSQL).")
+        pytest.skip(
+            "Legacy storage integration requires TEST_DATABASE_URL (PostgreSQL)."
+        )
     import psycopg
     from psycopg import sql
 
@@ -71,12 +73,16 @@ def legacy_storage_database(request, monkeypatch):
     schema = "legacy_test_" + uuid4().hex
     with psycopg.connect(test_url, autocommit=True) as root:
         root.execute(sql.SQL("CREATE SCHEMA {}").format(sql.Identifier(schema)))
+
     def connection():
         return psycopg.connect(test_url, options=f"-c search_path={schema}")
+
     monkeypatch.setattr(task_storage, "get_connection", connection)
     monkeypatch.setattr(request.module, "get_connection", connection)
     try:
         yield
     finally:
         with psycopg.connect(test_url, autocommit=True) as root:
-            root.execute(sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema)))
+            root.execute(
+                sql.SQL("DROP SCHEMA {} CASCADE").format(sql.Identifier(schema))
+            )
