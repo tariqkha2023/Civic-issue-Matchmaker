@@ -3,6 +3,37 @@ const password='fixture demo password';
 async function login(page,email){await page.goto('/#/login');await page.getByLabel('Email',{exact:true}).fill(email);await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Login',exact:true}).last().click();await expect(page.getByRole('heading',{name:'Discover civic-tech issues'})).toBeVisible();}
 async function overflow(page,width){expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);}
 
+test('Discover preserves filters and pagination while distinguishing unknown metadata', async ({page}, info) => {
+ const requests=[];
+ await page.route('**/api/recommendations?*', async route => {
+   const url=new URL(route.request().url()); requests.push(url.searchParams);
+   const task={id:9001,title:'Review the source task',repository:'example/civic',project:{name:'Example civic project',mission:'A project mission from the fixture.'},description:'## Source task\nFix **keyboard navigation**.\n```js\nexample();\n```',status:'open',url:'https://github.com/example/civic/issues/1',metadata:{skills:[],topics:[],difficulty:null,effort:null},labels:[],explanations:[],score:null,coverage:0,upstream:{number:1,assignees:[]},source_enabled:true};
+   await route.fulfill({json:{items:[{...task,score:url.searchParams.get('page')==='2'?0:null}],total:13}});
+ });
+ await login(page,'volunteer@civic.demo');
+ await expect(page.getByText('Not enough information to score',{exact:true})).toBeVisible();
+ await expect(page.getByText('A project mission from the fixture.',{exact:true})).toBeVisible();
+ await expect(page.locator('.issueExcerpt')).toHaveText('Source task Fix keyboard navigation.');
+ await expect(page.locator('.issueFacts')).toContainText('Unknown');
+ await page.getByText('Original issue text (Markdown)',{exact:true}).click();
+ await expect(page.locator('.originalIssue')).toContainText('**keyboard navigation**');
+ await page.getByRole('button',{name:'Next',exact:true}).click();
+ await expect(page.getByText('0/100 match score',{exact:true})).toBeVisible();
+ await page.getByLabel('Civic cause',{exact:true}).fill('Humanitarian mapping');
+ await page.getByLabel('Technical skill',{exact:true}).fill('python');
+ await page.getByRole('combobox',{name:'Experience level',exact:true}).selectOption('Beginner');
+ await page.getByRole('combobox',{name:'Project',exact:true}).selectOption('hotosm/tasking-manager');
+ await page.getByRole('combobox',{name:'GitHub issue state',exact:true}).selectOption('closed');
+ await page.getByRole('combobox',{name:'GitHub assignment',exact:true}).selectOption('unassigned');
+ await expect.poll(()=>Object.fromEntries(requests.at(-1))).toMatchObject({page:'1',topic:'Humanitarian mapping',skill:'python',difficulty:'Beginner',repository:'hotosm/tasking-manager',status:'closed',assignment:'unassigned'});
+ await expect(page.getByText('Not enough information to score',{exact:true})).toBeVisible();
+ await page.getByRole('button',{name:'Clear all',exact:true}).click();
+ await expect.poll(()=>Object.fromEntries(requests.at(-1))).toEqual({page:'1',status:'open',sort:'compatibility'});
+ await expect(page.getByText('Not enough information to score',{exact:true})).toBeVisible();
+ await overflow(page,info.project.use.viewport.width);
+ await page.screenshot({path:info.outputPath('discover.png'),fullPage:true});
+});
+
 test('contributor discovers source issues, tracks work, rates relevance and exports data',async({page},info)=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));
  await login(page,'volunteer@civic.demo');
@@ -18,6 +49,8 @@ test('contributor discovers source issues, tracks work, rates relevance and expo
  await project.getByRole('button',{name:'Browse issues'}).click();
  await page.getByLabel('Search',{exact:true}).fill('Improve Python mapping API');
  await page.getByRole('button',{name:'Improve Python mapping API',exact:true}).click();
+ await expect(page.getByRole('heading',{name:'AI-extracted requirements'})).not.toBeVisible();
+ await page.getByText('Match details and source metadata',{exact:true}).click();
  await expect(page.getByRole('heading',{name:'AI-extracted requirements'})).toBeVisible();
  await expect(page.locator('q').filter({hasText:'Python'})).toBeVisible();
  await expect(page.getByText('testing · AI inferred',{exact:true})).toBeVisible();
