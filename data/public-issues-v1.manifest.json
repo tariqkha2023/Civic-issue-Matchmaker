@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-10-29T02:45:09.107520+00:00",
+  "payload_sha256": "b998cce7b3628e89417cd02c718e84976c59cd1c20be7855e32f2de764d517a7",
+  "gzip_sha256": "cbcdcdb51ab5cd325caa94acb44e0cf0d6aa1f4771975a2b5fd0eae2c415c243",
+  "compressed_bytes": 9772392,
+  "extraction_version": "minimal-requirements-v2-production-v1",
+  "model": "deepseek/deepseek-v3.2",
+  "prompt_version": "minimal-requirements-v2",
+  "sources": [
+    {
+      "path": "hackforla/website",
+      "issues": 5185,
+      "open_issues": 458,
+      "cached_enrichments": 458
+    },
+    {
+      "path": "hotosm/tasking-manager",
+      "issues": 2339,
+      "open_issues": 417,
+      "cached_enrichments": 417
+    },
+    {
+      "path": "mysociety/fixmystreet",
+      "issues": 1559,
+      "open_issues": 205,
+      "cached_enrichments": 205
+    },
+    {
+      "path": "openfoodfacts/openfoodfacts-server",
+      "issues": 4384,
+      "open_issues": 1623,
+      "cached_enrichments": 569
+    },
+    {
+      "path": "openstreetmap/iD",
+      "issues": 8091,
+      "open_issues": 836,
+      "cached_enrichments": 571
+    }
+  ]
+}

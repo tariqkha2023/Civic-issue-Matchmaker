@@ -48,6 +48,11 @@ Original label-derived metadata is preserved. Valid AI skills are merged; explic
 
 A distributable snapshot must retain public project context, source text/IDs and enrichment fields/hash/version together. Copying just titles or scores will not preserve the cache. User profiles must never be bundled with public metadata.
 
+The included [public bundle](../data/README.md) carries those values together.
+`python -m app.snapshot setup` restores its valid cached requirements before
+creating local accounts. `ENABLE_WORKER=false` keeps first launch offline; no
+new enrichment requests are made by setup, import or browsing.
+
 ## Fixed-scale scoring: evidence-v4
 
 The model that renormalized partial evidence to 100% was replaced because it produced a whole page of indistinguishable 100% matches.

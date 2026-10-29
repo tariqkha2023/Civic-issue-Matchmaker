@@ -2,15 +2,15 @@
 
 Group 26 — Civic Issue Matchmaker. Recorded October 28, 2026 (US Eastern; October 29 UTC).
 
-Read this first when continuing in this workspace. The described AI, matching and contribution-removal implementation is now committed locally on `feat/github-issue-transition`; public data distribution is still pending.
+Read this first when continuing in this workspace. The described AI, matching and contribution-removal implementation is committed on `feat/github-issue-transition`. Public data distribution is now implemented with a bundled snapshot and `app.snapshot` export/import/setup commands.
 
 ## Immediate request and boundaries
 
-The next task is to make teammate setup easy and distribute the imported public GitHub issues **and cached AI enhancements**, so teammates do not repeat the downloads or pay for enrichment again. The user interrupted that task to request clear documentation committed locally before switching LLMs. Documentation and the pending implementation are now committed locally; snapshot implementation has **not** started.
+The current request is teammate-ready local setup distributing imported public GitHub issues **and cached AI enhancements**, so teammates do not repeat downloads or pay for enrichment again. The public-only bundle and safe import/setup commands are implemented. Formal quality acceptance work is deferred at the user's request; do not restart paid enrichment as part of this delivery.
 
 - Repository: `/home/walia6/repos/Civic-issue-Matchmaker`.
 - Working branch: `feat/github-issue-transition`. Local `main` has not been replaced by this work.
-- No push or merge is authorized by this handoff. Prepare work locally for review.
+- The user authorized pushing the teammate-ready implementation and documentation branch. Merging or replacing `main` still requires explicit authorization.
 - Preserve any new working-tree changes. The previously dirty implementation has been captured in local commits; inspect `git status --short` before further work.
 - Preexisting `package.json` / `package-lock.json` changes add `@openai/codex`; they are captured in a separate tooling commit.
 - Do not modify DOCX/PDF references. `docs/artifcats/AGENTS.md` marks that deliberately spelled historical directory as non-authoritative.
@@ -81,6 +81,7 @@ The files below, which were pending at the original handoff, are now included in
 | Contribution removal | `backend/app/contributions.py`, `src/pages/Participation.jsx` |
 | Regression coverage | new `backend/tests/test_enrichment.py`, `test_contribution_removal.py`; modified `test_github_scope.py`, `e2e/prepare.py`, `e2e/civic.spec.js` |
 | Optional key example | `backend/.env.example` |
+| Public issue/cache snapshot export, import and setup | `backend/app/snapshot.py`, `backend/tests/test_snapshot.py`, `data/` |
 
 Comparison outputs live in ignored `.local-tools/enrichment-comparison.json` and `enrichment-prompt-comparison*.json`. They are development samples, not independent accuracy benchmarks. `enrichment_trial.py` is an older experimental comparison against the old response schema; production `extract()` has since changed schema, so do not use its original strict/unchecked counts on fresh responses without updating that tool. The production CLI is `python -m app.enrichment`.
 
@@ -92,9 +93,13 @@ For Andre-test1, profile skills are JavaScript/HTML/CSS/documentation, interest 
 
 ## Last observed verification
 
-- **71 backend tests passed**, 5 PostgreSQL-only legacy tests skipped.
+- **78 backend tests passed**, 5 PostgreSQL-only legacy tests skipped, including seven public snapshot tests.
 - **12 Chromium browser tests passed**, across wide/desktop/mobile widths, including contribution deletion and AI-inferred badges.
 - Production build, Ruff and `git diff --check` passed.
+- Clean temporary-checkout offline setup restored the full public bundle and all
+  2,220 valid cache fingerprints. API checks, two repeat imports preserving all
+  private tables, contribution removal/retracking, restart and repeat setup
+  preserving passwords passed; see [implementation review](IMPLEMENTATION_REVIEW.md).
 - Clean earlier dependency baseline pins Vite 6.4.5 and had zero npm audit findings. Do not conflate the separately committed coding-tool package additions with that audited baseline.
 - Formal load, WCAG/cross-browser, usability, PostgreSQL and AI-recommendation accuracy acceptance remains unverified. Tests above do not establish all SRS quality targets.
 
@@ -109,19 +114,14 @@ E2E_PYTHON=.local-tools/runtime-venv/bin/python PLAYWRIGHT_BROWSERS_PATH=/tmp/ci
 
 Browser fixtures reset only `.e2e/civic.db`; do not point them at the real database.
 
-## Next work: teammate-ready public data distribution
+## Teammate-ready public data distribution
 
-This is **not implemented yet**. No seed/snapshot export/import command exists and no downloaded data is committed. A clone currently receives code/docs, not this host's 21,558 records or AI cache.
+- `data/public-issues-v1.json.gz`: 21,558 public GitHub issues, 3,539 open, and 2,220 valid cached AI enhancements; about 9.3 MiB compressed. `data/public-issues-v1.manifest.json` records counts, generation time and checksums.
+- `backend/app/snapshot.py` uses explicit public-field models, including nested source metadata and AI evidence allowlists. It exports no private tables or local curator overrides. The archive embeds schema/prompt versions, exact production prompt and payload checksum.
+- From `backend/`, `python -m app.snapshot setup` restores the bundle and then creates fresh local demo accounts. `python -m app.snapshot import` refreshes public records in an existing installation without resetting accounts/passwords or replacing the database. `python -m app.snapshot export` regenerates the public bundle from the operator database.
+- `.env.example` defaults to SQLite and `ENABLE_WORKER=false`. Setup, import and browsing make no source/AI API calls. The 1,319 open issues without cached enhancements remain source-derived or Limited information.
+- Repository GitHub IDs and stable upstream issue IDs map to local primary keys; existing private references remain valid. Repeated imports do not duplicate issues. Import validates the entire archive before writes and commits public changes in one transaction. Newer local source content, existing complete-source project settings and newer caches take priority; incompatible caches are skipped.
+- Source freshness, original GitHub issue numbers, labels and assignees remain distinct from local IDs and tracking. Exact issue/context fingerprints retain cached requirements without another paid extraction. Runtime job leases, staging and processing ledgers are not imported.
+- [Team setup](TEAM_SETUP.md) provides platform-specific interpreter paths and a first-run checklist; [snapshot format](../data/README.md) documents data refresh.
 
-Recommended next implementation:
-
-1. Build an explicit public-only export containing source configuration, issue content/original GitHub identifiers, source metadata and AI cache/provenance. Include schema/prompt versions and creation time/checksum.
-2. Exclude every account/session/message/notification/bookmark/contribution/feedback/preference/auth/audit/private-backup record and all tokens. If including curator metadata, export only deliberately public annotation fields, not private user references.
-3. Provide a small versioned compressed public snapshot or sanitized seed plus an import command. A sanitized seed SQLite file is acceptable; a compressed JSON snapshot can make schema evolution and inspection easier. Do not ship the live DB.
-4. Make fresh setup load the supplied data before launching, create new local demo accounts, and work without API keys. Provide an offline mode (`ENABLE_WORKER=false`) so the first run does not immediately refresh sources and invalidate caches.
-5. For existing databases, preserve private data. Use stable upstream source/issue identifiers and explicit ID mapping; never overwrite task IDs that private rows reference, or replace a teammate's whole working database to refresh public data.
-6. Include the final current AI metadata and its exact project context in the snapshot so hashes remain valid and teammates do not re-enrich unnecessarily. Preserve source authority/freshness.
-7. Add documented macOS/Windows/Linux commands and test a clean installation/restore with no API keys, then repeat import to establish idempotence and private-data preservation.
-8. Review any new implementation and prepare local commits. Do not push or merge until explicitly authorized.
-
-Two separate public/private runtime databases were discussed as a longer-term design, but **no split has been implemented**. Do not assume cross-database relationships already exist. Prefer completing a safe, simple teammate handoff before undertaking a broader database redesign.
+The application still uses one local runtime database with public/private tables. No cross-database split has been implemented. Formal load, WCAG/cross-browser, usability, PostgreSQL and AI-accuracy acceptance remains deferred. Any resumption of the incomplete enrichment run is a separate request and must account for previous spending.

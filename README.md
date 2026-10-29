@@ -4,7 +4,7 @@ Group 26's application matches technical contributors with GitHub issues from ci
 
 [Master scope](docs/PROJECT_SCOPE.md) · [Requirements and verification](docs/REQUIREMENTS_STATUS.md) · [Team setup/data sharing](docs/TEAM_SETUP.md) · [Developer/LLM handoff](docs/DEVELOPER_HANDOFF.md) · [AI and matching](docs/AI_MATCHING.md)
 
-> **Handoff status:** the latest AI, scoring and contribution-removal implementation is committed locally on `feat/github-issue-transition`. Imported issues and AI metadata exist only in the local ignored database; a teammate-ready public snapshot/restore command is not implemented yet. Read the [handoff](docs/DEVELOPER_HANDOFF.md) before distributing a clone.
+> **Teammate-ready data:** this branch includes **21,558 public GitHub issues and 2,220 cached AI enhancements** in [`data/public-issues-v1.json.gz`](data/README.md) (about 9.3 MiB). The setup command below restores them into your own local database. No GitHub/OpenRouter keys, tracker downloads or repeated AI computation are needed. Accounts and private activity are not bundled.
 
 ## Quick local setup
 
@@ -34,7 +34,7 @@ Copy-Item backend/.env.example backend/.env
 
 Use `python` instead of `py -3` if the launcher is unavailable. Use `npm.cmd` if PowerShell blocks `npm.ps1`. These commands use the environment directly; activation is unnecessary.
 
-### Configure SQLite and source access
+### Configure SQLite and offline mode
 
 In `backend/.env`, set:
 
@@ -42,32 +42,32 @@ In `backend/.env`, set:
 DATABASE_URL=sqlite:///./civic-dev.db
 APP_ORIGIN=http://localhost:5173,http://127.0.0.1:5173
 COOKIE_SECURE=false
-ENABLE_WORKER=true
+ENABLE_WORKER=false
 APP_DEMO=false
 BACKUP_DIR=./backups
 ```
 
-Optionally set `GITHUB_TOKEN` in that same file to an operator token permitted to read the selected public repositories. It is never sent to browsers, written to issue records or included in exports. Do not commit it.
+These are the defaults in `.env.example`. Leave both `GITHUB_TOKEN` and `OPENROUTER_API_KEY` absent for teammate setup. `ENABLE_WORKER=false` keeps the imported public snapshot unchanged on first launch; profiles, discovery, matching, bookmarks, contributions, curator reviews and messages still work locally.
 
-**Large tracker indexing is quota-dependent.** Unauthenticated GitHub requests have a much smaller quota. Initial scans stage a few pages at a time, pause on source limits and resume without losing progress. Issues become visible after the complete initial tracker scan publishes; an empty feed during that period is not a fake-data fallback. Projects and Administration show completeness, staged pages and errors. A public-read token is recommended to complete large initial scans promptly.
+To deliberately refresh sources later, set `ENABLE_WORKER=true` and optionally provide your own public-read `GITHUB_TOKEN`. Large tracker indexing is quota-dependent: scans stage pages, pause on limits and resume without losing progress. Source content or project context changes may invalidate affected AI caches; refreshing GitHub never launches paid enrichment automatically.
 
-### Create local accounts and start the backend
+### Restore the bundled data, create local accounts and start the backend
 
 From `backend`, macOS/Linux:
 
 ```bash
-.venv/bin/python -m app.bootstrap
+.venv/bin/python -m app.snapshot setup
 .venv/bin/python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
 Windows:
 
 ```powershell
-.\.venv\Scripts\python.exe -m app.bootstrap
+.\.venv\Scripts\python.exe -m app.snapshot setup
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-Bootstrap configures the five real sources and creates these local accounts, printing a randomly generated password for each new account:
+`app.snapshot setup` validates and imports the included public issues and AI cache, then bootstraps these local accounts, printing a randomly generated password for each new account:
 
 | Account | Role |
 |---|---|
@@ -75,7 +75,7 @@ Bootstrap configures the five real sources and creates these local accounts, pri
 | `maintainer@civic.demo` | Curator for the configured sources |
 | `administrator@civic.demo` | Administrator |
 
-The email names remain compatible with the earlier demo; the user-facing roles are Contributor and Curator. Existing passwords/profiles are preserved. Rerunning bootstrap does not print or reset old passwords. Store new passwords when printed. Public signup creates contributors only.
+The email names remain compatible with the earlier demo; the user-facing roles are Contributor and Curator. Existing passwords/profiles are preserved. Rerunning setup does not print or reset old passwords. Store new passwords when printed. Public signup creates contributors only. Issues with no cached AI requirements remain source-derived or Limited information; setup does not spend credits to fill those gaps.
 
 ### Start the frontend
 
@@ -88,6 +88,16 @@ npm run dev
 Open **http://localhost:5173**. Keep both terminals running. Ports 5173 and 8000 must be available. Vite proxies `/api` to the backend. Health checks: http://127.0.0.1:8000/health and `/health/db`; API reference: `/docs`.
 
 Later launches require only the two server commands. The database persists at `backend/civic-dev.db`. Startup applies additive migrations and retains earlier data. Original claim/event records remain; migrated contributions explicitly identify legacy local events.
+
+### Update an existing local installation
+
+Stop its backend/worker, retain `ENABLE_WORKER=false`, and run from `backend/`:
+
+```bash
+python -m app.snapshot import
+```
+
+Use the same virtual-environment interpreter paths shown above if it is not activated. Imports map stable GitHub repository/issue identities to local IDs rather than replacing the database. Existing accounts, sessions, private activity, bookmarks and curator overrides remain; repeated imports do not duplicate issues. Newer local source content and existing complete-source project settings take priority. Incompatible caches are skipped rather than rewritten to match a different context. See [data format and export commands](data/README.md).
 
 For LAN access, add `http://YOUR_LAN_IP:5173` to `APP_ORIGIN` and restart the backend. Open that address from a reachable device and allow frontend traffic through the host firewall. Vite already binds to the LAN; the backend can stay on localhost.
 

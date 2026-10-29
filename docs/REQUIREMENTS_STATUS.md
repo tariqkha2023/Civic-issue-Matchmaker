@@ -66,8 +66,8 @@ These are verification work, not automatic N/A exclusions. Do not present the pr
 
 ## Verification record
 
-- Backend regression suite: 54 passed; five PostgreSQL-only legacy tests skipped locally without a test database.
-- All nine Chromium browser workflows passed across desktop/mobile widths; production build and Ruff passed.
+- Backend regression suite: 78 passed, including seven public snapshot tests; five PostgreSQL-only legacy tests skipped locally without a test database.
+- All 12 Chromium browser workflows passed across desktop/mobile widths; production build and Ruff passed.
 - New tests cover all-state paginated ingestion, PR exclusion, resumable quota failures, snapshot/source preservation, curator review flags, nonexclusive tracking, evidence/state validation, personal feedback, export/deletion and backup data recovery.
 - Existing tests retain authentication/profile/role/messaging coverage and explicit legacy fixture behavior. Local fixture creation requires `APP_DEMO=true`; it is disabled by default.
 - Formal course usability, full browser/accessibility certification and production availability are not claimed.

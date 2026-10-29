@@ -18,7 +18,7 @@ The GitHub-based functional implementation is prepared on `feat/github-issue-tra
 
 ## Observed checks
 
-- 71 backend tests passed; 5 PostgreSQL-only legacy tests skipped without an explicit test database.
+- 78 backend tests passed, including seven public snapshot tests; 5 PostgreSQL-only legacy tests skipped without an explicit test database.
 - 12 Chromium browser workflows passed across 1920, 1440 and 360-pixel widths.
 - Production frontend build, Ruff and source whitespace checks passed.
 - Existing local data upgraded after a consistent backup: four accounts and 19 published legacy issues retained.
@@ -26,7 +26,26 @@ The GitHub-based functional implementation is prepared on `feat/github-issue-tra
 
 ## Teammate distribution status
 
-The public issue/AI snapshot and safe restore command are still pending. Data currently lives in the ignored private development database. Latest AI/scoring/removal code is now committed locally on `feat/github-issue-transition`. See [developer handoff](DEVELOPER_HANDOFF.md) and [team setup](TEAM_SETUP.md).
+The public issue/AI snapshot and safe restore command are implemented in `app.snapshot`. The bundle includes 21,558 public GitHub issues and 2,220 valid cached AI enhancements. Fresh setup uses SQLite with scanning disabled and restores the bundle before creating new local demo accounts; no operator keys or repeated computation are needed. The live private development database remains ignored. See [developer handoff](DEVELOPER_HANDOFF.md), [team setup](TEAM_SETUP.md) and [snapshot format](../data/README.md).
+
+### Teammate handoff verification — October 29, 2026 UTC
+
+- A clean temporary repository export received a fresh isolated Python dependency
+  installation and `npm ci`; the clean production build passed. This Linux host
+  lacks `ensurepip`, so its isolated environment was created with `--without-pip`
+  and populated using system `pip --python`. Normal teammate commands require
+  the platform's venv support, as noted in the README.
+- Setup with both operator keys absent restored 21,558 issues (3,539 open),
+  2,220 valid AI caches, including 2,028 skill-bearing results, and generated
+  three new local accounts. No operator accounts or processing-job state arrived.
+- Login, project counts, recommendations and AI evidence were exercised against
+  the restored real bundle; external HTTP transport was blocked during API checks.
+- Two repeat imports preserved all private tables, including the new local
+  bookmark/contribution and password/session records. Contribution removal and
+  retracking, backend restart, administrator cache status, and repeat setup
+  preserving existing passwords passed.
+- A direct public-payload check found none of this host's local account emails,
+  password hashes, session hashes or configured operator API keys in the bundle.
 
 ## Required acceptance work still outstanding
 
