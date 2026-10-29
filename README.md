@@ -1,700 +1,171 @@
 # Civic Issue Matchmaker
 
-## Quick demo setup — macOS, Windows, and Linux
+Group 26's application matches technical contributors with GitHub issues from civic-tech projects. GitHub is read-only and remains authoritative. The application provides profiles, explained recommendations, private bookmarks and contribution tracking, curator metadata reviews, messages, in-app notifications and source administration.
 
-Run the civic demo locally with **SQLite**. You do not need Docker, PostgreSQL,
-GitHub/GitLab credentials, or an external repository for this walkthrough.
+[Master scope](docs/PROJECT_SCOPE.md) · [Requirements and verification](docs/REQUIREMENTS_STATUS.md) · [Team setup/data sharing](docs/TEAM_SETUP.md) · [Developer/LLM handoff](docs/DEVELOPER_HANDOFF.md) · [AI and matching](docs/AI_MATCHING.md)
 
-### 1. Prerequisites and download
+> **Handoff status:** the latest AI, scoring and contribution-removal implementation is committed locally on `feat/github-issue-transition`. Imported issues and AI metadata exist only in the local ignored database; a teammate-ready public snapshot/restore command is not implemented yet. Read the [handoff](docs/DEVELOPER_HANDOFF.md) before distributing a clone.
 
-Install **Git**, **Python 3.11 or newer**, and **Node.js 18 or newer with npm**
-(Node.js 22 is recommended). On Linux, your distribution may also require the
-`python3-venv` package. On Windows, enable Python's PATH option during installation.
+## Quick local setup
 
-In Terminal (macOS/Linux) or PowerShell (Windows):
+Requires Python 3.11+ and Node.js 18+ with npm (Node 22 recommended). The local release uses SQLite; no Docker, paid AI service, GitHub OAuth or email provider is needed.
 
-```sh
-git clone --branch main https://github.com/tariqkha2023/Civic-issue-Matchmaker.git
-cd Civic-issue-Matchmaker
-```
+### macOS and Linux
 
-If you downloaded the ZIP, extract it and open a terminal in the extracted project
-folder instead. All setup commands below begin in this project root.
-
-### 2. Install dependencies
-
-**macOS / Linux — Terminal:**
+From the project root:
 
 ```bash
 python3 -m venv backend/.venv
-backend/.venv/bin/python -m pip install -r backend/requirements.txt
+backend/.venv/bin/python -m pip install -r backend/requirements-dev.txt
 npm ci
 cp backend/.env.example backend/.env
 ```
 
-**Windows — PowerShell:**
+Linux may require the distribution's `python3-venv` package. Reuse an existing `.env` rather than overwriting it.
+
+### Windows PowerShell
 
 ```powershell
 py -3 -m venv backend/.venv
-.\backend\.venv\Scripts\python.exe -m pip install -r backend/requirements.txt
+.\backend\.venv\Scripts\python.exe -m pip install -r backend/requirements-dev.txt
 npm ci
 Copy-Item backend/.env.example backend/.env
 ```
 
-These commands use the virtual environment directly; activation is unnecessary.
-If `py` is unavailable on Windows, use `python -m venv backend/.venv` instead.
-If PowerShell blocks `npm.ps1`, use `npm.cmd ci` and `npm.cmd run dev`.
-For an existing installation, reuse `backend/.env` rather than copying over it.
+Use `python` instead of `py -3` if the launcher is unavailable. Use `npm.cmd` if PowerShell blocks `npm.ps1`. These commands use the environment directly; activation is unnecessary.
 
-### 3. Select the demo database
+### Configure SQLite and source access
 
-Open **`backend/.env`** in a text editor. Replace its `DATABASE_URL` line with:
+In `backend/.env`, set:
 
 ```env
 DATABASE_URL=sqlite:///./civic-dev.db
-```
-
-Keep these settings for a demo on the same computer:
-
-```env
 APP_ORIGIN=http://localhost:5173,http://127.0.0.1:5173
 COOKIE_SECURE=false
+ENABLE_WORKER=true
+APP_DEMO=false
+BACKUP_DIR=./backups
 ```
 
-### 4. Seed the demo and start the backend — terminal 1
+Optionally set `GITHUB_TOKEN` in that same file to an operator token permitted to read the selected public repositories. It is never sent to browsers, written to issue records or included in exports. Do not commit it.
 
-“Seed” means populate the database with the **18 fictional civic issues** and
-**three demo accounts**. Run the commands for your operating system:
+**Large tracker indexing is quota-dependent.** Unauthenticated GitHub requests have a much smaller quota. Initial scans stage a few pages at a time, pause on source limits and resume without losing progress. Issues become visible after the complete initial tracker scan publishes; an empty feed during that period is not a fake-data fallback. Projects and Administration show completeness, staged pages and errors. A public-read token is recommended to complete large initial scans promptly.
 
-**macOS / Linux:**
+### Create local accounts and start the backend
+
+From `backend`, macOS/Linux:
 
 ```bash
-cd backend
 .venv/bin/python -m app.bootstrap
 .venv/bin/python -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-**Windows — PowerShell:**
+Windows:
 
 ```powershell
-cd backend
 .\.venv\Scripts\python.exe -m app.bootstrap
 .\.venv\Scripts\python.exe -m uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 ```
 
-**Save the passwords printed by bootstrap.** Each installation generates its own
-passwords for these accounts:
+Bootstrap configures the five real sources and creates these local accounts, printing a randomly generated password for each new account:
 
-| Role | Email | What to demonstrate |
-|------|-------|---------------------|
-| Volunteer | `volunteer@civic.demo` | Discover, save, claim, release, complete, and participation history |
-| Maintainer | `maintainer@civic.demo` | Correct issue metadata in Manage issues |
-| Administrator | `administrator@civic.demo` | Assign roles/repositories, toggle sources, and inspect audit activity |
+| Account | Role |
+|---|---|
+| `volunteer@civic.demo` | Contributor |
+| `maintainer@civic.demo` | Curator for the configured sources |
+| `administrator@civic.demo` | Administrator |
 
-Keep this terminal running. Rerunning bootstrap adds missing samples/accounts
-without duplicating issues or resetting existing passwords; it only prints
-passwords for newly created accounts. Accounts from another computer are not
-copied by cloning the repository.
+The email names remain compatible with the earlier demo; the user-facing roles are Contributor and Curator. Existing passwords/profiles are preserved. Rerunning bootstrap does not print or reset old passwords. Store new passwords when printed. Public signup creates contributors only.
 
-### 5. Start the frontend — terminal 2
+### Start the frontend
 
-Open a **second terminal in the project root**, then run on any operating system:
+In a second terminal at the project root:
 
-```sh
+```bash
 npm run dev
 ```
 
-Open **http://localhost:5173**, log in with a printed demo account, and open
-**Repository** to see Community Care / Civic Issues. Sign out to switch roles.
-Keep both terminals running during the presentation; use **Ctrl+C** to stop them.
+Open **http://localhost:5173**. Keep both terminals running. Ports 5173 and 8000 must be available. Vite proxies `/api` to the backend. Health checks: http://127.0.0.1:8000/health and `/health/db`; API reference: `/docs`.
 
-For later launches, repeat the backend startup command from `backend` and
-`npm run dev` from the project root. You do not need to seed again. The database
-persists at `backend/civic-dev.db`.
+Later launches require only the two server commands. The database persists at `backend/civic-dev.db`. Startup applies additive migrations and retains earlier data. Original claim/event records remain; migrated contributions explicitly identify legacy local events.
 
-### Troubleshooting and optional LAN access
+For LAN access, add `http://YOUR_LAN_IP:5173` to `APP_ORIGIN` and restart the backend. Open that address from a reachable device and allow frontend traffic through the host firewall. Vite already binds to the LAN; the backend can stay on localhost.
 
-- **Empty issue list or no demo accounts:** run bootstrap from `backend`, using
-  the same `backend/.env` as the server.
-- **Cannot connect / failed API request:** check that the backend is running on
-  port 8000. Its health URL is http://127.0.0.1:8000/health.
-- **Port already in use:** stop the other process using port 5173 or 8000. Vite
-  requires port 5173 and will not automatically choose a different port.
-- **Show the demo on another device:** Vite already listens on the LAN. Add
-  `http://YOUR_COMPUTER_LAN_IP:5173` to the comma-separated `APP_ORIGIN` list in
-  `backend/.env`, restart the backend, and open that address on the other device.
-  Permit port 5173 through the host firewall if needed. The backend can stay on
-  `127.0.0.1` because Vite proxies its API requests. Both devices must be able to
-  reach each other on the network.
+## Real source projects
 
-The demo implements accounts/profiles, explained matching, saving, participation,
-repository-scoped metadata corrections, and basic administration. The sections
-below contain walkthroughs and additional development references.
+- [FixMyStreet](https://github.com/mysociety/fixmystreet): public infrastructure reporting.
+- [HOT Tasking Manager](https://github.com/hotosm/tasking-manager): humanitarian mapping.
+- [OpenStreetMap iD](https://github.com/openstreetmap/iD): open geographic data.
+- [Open Food Facts](https://github.com/openfoodfacts/openfoodfacts-server): food transparency.
+- [Hack for LA website](https://github.com/hackforla/website): civic participation.
 
-## Presentation demo: community issues
+Every source's entire issue tracker is eligible for ingestion, including closed issues. Pull requests are excluded. There is no `help wanted`/beginner label whitelist. Default discovery shows open issues; source assignment is displayed and filterable. Project listing does not imply affiliation or maintainer endorsement.
 
-The demo uses **Community Care / Civic Issues**, a fictional local repository.
-It contains 18 sample issues: soup kitchen shifts, pothole repair coordination,
-food pantry support, park cleanup, gardening, accessibility surveys, tutoring,
-and other community work. No GitHub/GitLab connection is used in the demo.
+## Workflows
 
-To populate a fresh database, run inside `backend` with the virtual environment active:
+1. **Contributor:** set technical skills, civic interests, experience and weekly hours; explore Projects and Discover; inspect score explanations, metadata coverage, source freshness and original GitHub issue details.
+2. **Bookmark or track:** save privately or Track contribution → Start work → Add submission → Mark contribution complete. Stop tracking withdraws activity. Remove contribution → Confirm removal deletes your local entry and its history in any state, including completed; the source issue and other contributors remain unchanged. You can track the issue again afterward.
+3. **Source authority:** multiple users can track one issue. Local tracking does not assign, reserve or close it on GitHub. Follow each source's contribution process. Completion is explicitly self-reported; a linked PR is not automatically verified as accepted.
+4. **Feedback:** rate an issue Relevant/Not relevant and optionally explain. Your feedback, completion history and repository preferences help break equal-fit ties; they do not inflate assessed technical fit.
+5. **Curator:** Review metadata → search a source issue → inspect source → correct skills/topics/difficulty/hours and add a rationale. Corrections remain separate; source changes flag them for re-review. Reset override restores source-derived values.
+6. **Administrator:** assign roles/repository scopes, add GitHub sources, configure scan intervals/topics/mission, queue/resume scans, toggle source enablement and inspect scans/audits.
+7. **Messages and notifications:** coordinate through permitted private conversations, read task/account notifications and scan match digests; manage preferences in Account settings.
+8. **Privacy:** export your personal data as JSON or reauthenticate to delete/anonymize your account. The last administrator must appoint another before deletion. Personal messages involving a deleted account are removed; shared source issues and sanitized audit references remain.
 
-```bash
-python -m app.demo
-```
+## Matching
 
-This adds missing samples without deleting accounts, overwriting issues, or creating
-duplicates on subsequent runs. On **Discover**, choose **Create issue**, enter an
-issue title and optional description, location, organizer, skills, topic, difficulty,
-and estimated hours. New issues join the demo repository, appear in Discover, and
-persist across refreshes and server restarts. The **Repository** navigation item
-shows the populated issue collection. All sample places and requests are fictional.
+The versioned `evidence-v4` model uses skills 60%, difficulty/experience 20%, civic interests 15%, and explicit availability/effort 5%. Scores use a fixed 100-point denominator: matching known factors earn points; missing factors remain unknown and do not inflate the remaining factors to 100%. A percentage requires both issue-specific skills and profile skills; topic/repository preference alone produces **Limited information**. Repository preference, own relevance feedback and completion history break equal-fit ties without changing the percentage. AI-inferred skills carry half the evidence weight of stated or curator-reviewed skills, both within skill alignment and in the overall skill factor. Evidence coverage discounts inferred evidence too. Evidence coverage is separate: a high score with partial coverage is not a guarantee of suitability. Source labels, AI suggestions labeled stated/inferred, and curator corrections supply requirements, with curator corrections taking precedence. Project languages remain contextual hints. Location is not scored.
 
-For a simple presentation walkthrough:
+GitHub bodies are displayed as plain text rather than executing imported HTML. Unknown estimates remain unknown. Compatibility is guidance, not probability of acceptance.
 
-1. Set your profile skills to `Food preparation, Communication` and interests to
-   `Food security`, with Beginner experience/difficulty and 3 available hours.
-2. Open Discover and inspect the soup kitchen match and its explanations.
-3. Open Repository to show the collection of civic issues.
-4. Create a new community issue, then find it in Discover and Repository.
-5. Save an issue, open Saved tasks, and refresh to demonstrate persistence.
+## Scheduler and backups
 
-## Configure and import repository sources
+The backend starts a worker unless `ENABLE_WORKER=false`. It checks due sources every 15 seconds, stages five pages per scan attempt, resumes unfinished scans, scans normally at hourly/configured intervals and performs a weekly full reconciliation. Incremental scans use overlapping update timestamps; failed scans do not publish partial changes or infer closure. Missing records in a full scan are marked unavailable, not silently closed.
 
-Source configuration is an operator command in this milestone. Volunteers cannot
-add arbitrary sources or grant themselves privileged access. Only configure
-repositories whose access is permitted and which are appropriate civic projects.
-With the backend virtual environment active, run inside `backend`:
+A one-pass worker can be run from `backend` with the environment active:
 
 ```bash
-python -m app.manage add-source github OWNER/REPOSITORY
-python -m app.manage add-source gitlab NAMESPACE/PROJECT
-python -m app.manage list-sources
-python -m app.manage scan
+python -m app.worker --once
 ```
 
-Replace uppercase paths with actual repository paths. By default all open issues
-are eligible; optionally add `--label "good first issue"` to `add-source`.
-Repeat `--label` to select issues with any matching label. Re-running `add-source`
-updates selection labels and re-enables the existing source. Disable a source with
-`python -m app.manage disable-source ID`. Set `GITHUB_TOKEN` or `GITLAB_TOKEN` in
-`backend/.env` if the authorized source requires credentials; credentials are never
-stored in task records or returned by the API.
+The older `app.manage`/`app.ingestion` commands are retained for legacy fixtures; use the worker and Administration for real GitHub synchronization.
 
-Scans are manual in this milestone. Re-run `python -m app.manage scan` to refresh.
-A successful complete scan updates existing tasks, inserts new tasks without
-duplicates, and marks previously imported issues that are absent as closed.
-A failed or malformed scan rolls back changes and retains the previous snapshot,
-its freshness timestamp, and a sanitized source error.
-
-Skills derive from exact labels such as `python`, `react`, `documentation`, or
-`skill:python`. Topics use `topic:Transportation`; difficulty uses `beginner`,
-`intermediate`, `advanced`, `difficulty:beginner`, or `good first issue`.
-Effort uses `effort:2h`. Other labels stay visible but do not invent metadata.
-Profile topics and skill names match without case sensitivity.
-
-The SDD weights are skill fit 35%, topic fit 20%, experience/difficulty fit 15%,
-time/effort fit 15%, and optional repository preference 5%. The planned 10%
-history/feedback factor is deferred. Available factors are renormalized; missing
-metadata contributes no fabricated value. Tasks without usable matching metadata
-are explicitly unscored. Scores express fit, not acceptance guarantees.
+The worker creates a consistent SQLite backup daily and retains seven dated backups under `BACKUP_DIR`. These contain private data and are gitignored. To restore locally, stop both backend and any separate workers, preserve the current database, copy the selected backup over `backend/civic-dev.db`, then restart. Test recovery using a separate copy first. Seven-day backup rotation bounds retention of data removed from the live database. PostgreSQL deployments require their own database backup/restore procedure; automated backups in this local release are SQLite-specific.
 
 ## Verify
 
+With the backend environment active, from the project root:
+
 ```bash
-python -m pytest
+python -m pytest backend/tests -q
 ruff check backend
 npm run build
-```
-
-The tests use isolated databases for workflow checks and preserve existing connector
-tests. Backend CI runs these workflows against PostgreSQL in a separate schema per
-test; local tests default to SQLite. Set `TEST_DATABASE_URL` to exercise a local
-PostgreSQL database (the test account must be allowed to create schemas). For the browser suite:
-
-```bash
-npm ci
 npx playwright install chromium
 npm run test:e2e
 ```
 
-Browser tests start their own backend with a disposable `.e2e/civic.db` SQLite database and frontend
-on port 5174, so the LAN frontend can stay running. The suite covers registration,
-profile persistence, recommendations, saved tasks, logout/login, and layout overflow at 360, 1440, and 1920 pixels.
+`E2E_PYTHON` can select another Python interpreter path. Browser fixtures are guarded to reset only `.e2e/civic.db`; the fixture server disables live scans. They use representative GitHub-shaped data, not a claim that the five trackers were fully downloaded. Active browser tests are `e2e/civic.spec.js`; older presentation scripts are retained as historical tests and are not selected.
 
-## Milestone boundaries
+Backend tests use isolated SQLite or, with `TEST_DATABASE_URL`, separate PostgreSQL schemas. PostgreSQL-only legacy tests skip without that explicit test database. Never point testing commands at your live demo database.
 
-Implemented: volunteer authentication and persistent profiles; explained matching,
-search/filter/sort and task details; the fictional civic repository and issue creation;
-private saved lists; atomic claims, release/completion and participation history;
-repository-scoped maintainer corrections with source preservation; basic role/source
-administration and audit activity; responsive role interfaces and automated tests.
-Manual external connector/ingestion code is available for later integration.
+See [requirements status](docs/REQUIREMENTS_STATUS.md) for applicable/N/A requirements, observed verification and outstanding formal quality checks.
 
-Remaining: scheduled imports/backoff, live repository demo integration, feedback and
-adaptive scoring, notifications/email, advanced administration/settings, account
-deletion/export, backups, production hosting, full accessibility audit and load tests.
-Additive schema version 1 initializes the demo while preserving existing users/issues.
-Production deployment requires its own HTTPS, database and operational configuration.
+## Delivery boundary
 
----
+This is a locally runnable application with setup and operations instructions. Public hosting, GitHub OAuth/write-back and email delivery are excluded by the agreed delivery choices. GitLab adapter code is retained as groundwork; GitHub is the required source provider. Formal course usability testing and production availability cannot be asserted from automated local tests.
 
-## Earlier backend setup reference
+Historical DOCX/PDF references live unchanged in `docs/artifcats/`. Maintained Markdown documents and the master scope govern the transition. The original physical-volunteering examples are isolated fixtures, not real GitHub data or current project opportunities.
 
-## Getting Started (MAC INSTALLATION) - (WINDOWS -see below)
+### Optional AI enrichment of public issues
 
-### Requirements
-
-Before beginning, make sure you have:
-
-- Git
-
-### 1. Clone the project from GitHub
-
-Open a terminal and run:
+Set `OPENROUTER_API_KEY` in `backend/.env` (never commit the key). Run from `backend/`, with the backend environment activated:
 
 ```bash
-git clone https://github.com/tariqkha2023/Civic-issue-Matchmaker.git
+python -m app.enrichment --limit 50 --budget 0.05
 ```
 
-This downloads the project to your computer and automatically connects your local Git repository to the shared GitHub repository.
+The model is `deepseek/deepseek-v3.2` through OpenRouter. The revised `minimal-requirements-v2` prompt uses public project technology context and separates stated from inferred requirements. Each run processes only enabled projects' open issues, interleaves projects, uses up to four requests concurrently by default (`--workers 1..8`), and reserves conservative request costs before submission. Provider price ceilings are $0.35/million input and $0.60/million output tokens; a run stops on provider errors or when the next request cannot fit its budget. `--budget` accepts at most $2 per invocation. Also set an account/key spending limit in OpenRouter: the application budget is a conservative estimate, not a billing guarantee.
 
-Then enter the project folder which already has the following name, and call terminal:
+Only public issue titles, descriptions, labels and curated public project context (mission/topics/languages) are sent—not accounts, profiles, messages or passwords. Issue text is untrusted input. The model identifies the smallest defensible skill set, labels each skill explicit or inferred, and explains why it matters. Inferences do not need literal technology mentions or quotes. Basic JSON/schema validation remains; no keyword filter removes inferred skills. A claimed explicit requirement without a matching source quote is retained as inferred. Quotations and model labels are not proof of correctness. Curators can override suggestions; difficulty is requested only when explicitly supported and AI never estimates effort. The first 14,000 characters of each issue are analyzed, so long issues may have incomplete coverage.
 
-```bash
-cd Civic-issue-Matchmaker
-```
-
-You can VERIFY the GitHub connection with:
-
-```bash
-git remote -v
-```
-
-You should see the shared GitHub repository listed as `origin`.
-
-### 2. Run the backend setup script
-
-From the project root (Civic-issue-Matchmaker), run:
-
-```bash
-./setup_backend.sh
-```
-
-At the end this will:
-
-- check that Python 3.12 is installed
-- create a local Python virtual environment named `.venv` if one does not already exist
-- install the correct Python packages that are listed in `backend/requirements.txt`
-
-### 3. Activate the virtual environment
-
-After the setup script finishes, (you will be back at the root) enter this to activate the environment manually:
-
-```bash
-source backend/.venv/bin/activate
-```
-
-Once activated, your terminal should show something such as:
-
-```text
-(.venv)
-```
-
-This means Python and `pip` (the Python package installer) are now using the project's isolated virtual environment.
-
-### 4. Start the FastAPI backend
-
-Move into the backend folder with this command:
-
-```bash
-cd backend
-```
-
-Then start the development server using this:
-
-```bash
-uvicorn app.main:app --reload
-```
-
-You should see a some kind of message showing that Uvicorn is running at:
-
-```text
-http://127.0.0.1:8000
-```
-
-### 5. Verify that the backend is working
-
-Open this address in your browser:
-
-```text
-http://127.0.0.1:8000/health
-```
-
-You should receive:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-### 6. After every session working on the project: 
-
-To leave the virtual environment, run:
-
-```bash
-deactivate
-```
-
-## For Future Sessions working on the project
-
-Before starting work, enter the project master folder and get the latest changes from GitHub,
-(that is, any updates from everyone collaborating):
-
-```bash
-cd Civic-issue-Matchmaker
-git pull
-```
-
-Then activate the backend environment:
-
-```bash
-source backend/.venv/bin/activate
-```
-
-Start the backend:
-
-```bash
-cd backend
-uvicorn app.main:app --reload
-```
-
-
-## Basic Git Workflow
-
-Before starting work:
-
-```bash
-git pull
-```
-
-After making changes:
-
-```bash
-git add .
-git commit -m "Describe your changes"
-git push
-```
-
-
-
-
-
---------------------------------------------
-
-
-
-
-
-## Windows Backend Setup
-
-### 1. Clone the project from GitHub
-
-Open PowerShell and run:
-
-```powershell
-git clone https://github.com/tariqkha2023/Civic-issue-Matchmaker.git
-```
-
-Then enter the project root folder with:
-
-```powershell
-cd Civic-issue-Matchmaker
-```
-
-You can verify the GitHub connection with:
-
-```powershell
-git remote -v
-```
-
-You should see the shared GitHub repository listed as `origin`.
-
-### 2. Run the Windows backend setup script
-
-From the project root, run:
-
-```powershell
-.\setup_backend.ps1
-```
-
-This will:
-
-- check that Python 3.12 is installed
-- create a local Python virtual environment named `.venv` if one does not already exist
-- install the required Python packages listed in `backend\requirements.txt`
-
-### If PowerShell blocks the setup script
-
-If PowerShell reports that script execution is disabled, run this and then try the setup script again:
-
-```powershell
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
-```
-
-This change only applies to the current PowerShell session.
-
-Then try again, run:
-
-```powershell
-.\setup_backend.ps1
-```
-
-### 3. Activate the virtual environment
-
-After the setup script finishes, (back at the root folder) activate the environment manually:
-
-```powershell
-.\backend\.venv\Scripts\Activate.ps1
-```
-
-Once activated, your PowerShell prompt should show something such as:
-
-```text
-(.venv)
-```
-
-This means Python and `pip` (pythong package installer) are now using the project's isolated virtual environment.
-
-### 4. Start the FastAPI backend
-
-Move into the backend folder with:
-
-```powershell
-cd backend
-```
-
-Then start the development server with:
-
-```powershell
-uvicorn app.main:app --reload
-```
-
-Uvicorn should start and display an address such as:
-
-```text
-http://127.0.0.1:8000
-```
-
-### 5. Verify that the backend is working
-
-Open this address in your browser:
-
-```text
-http://127.0.0.1:8000/health
-```
-
-You should receive:
-
-```json
-{
-  "status": "ok"
-}
-```
-
-### 6. Everytime you are finished with a session working on the project
-
-To leave the virtual environment, run:
-
-```powershell
-deactivate
-```
-
-## For Future working sessions
-
-Before starting work, enter the project root folder and get the latest changes from GitHub:
-
-```powershell
-cd Civic-issue-Matchmaker
-git pull
-```
-
-Then activate the virtual environment:
-
-```powershell
-.\backend\.venv\Scripts\Activate.ps1
-```
-
-Start the backend:
-
-```powershell
-cd backend
-uvicorn app.main:app --reload
-```
-
-
-
---------------------------------------------------------------------------------
-
-
-## Updating an Existing Backend Setup
-
-Use these instructions AFTER you already completed the original backend setup 
-
-### Prerequisite
-
-"Docker Desktop" MUST be installed and running before using the update script.
-Confirm that it is indeed installed, becuase you must open it first, and verify in terminal that it is working
-
-Verify Docker Installation with:
-
-```bash
-docker --version
-docker compose version
-```
-
----
-
-### Mac / Linux
-
-From the project root, run:
-
-```bash
-git pull
-./update_backend.sh
-```
-
-The update script will automatically:
-
-- reuse the existing Python virtual environment
-- install any new backend dependencies
-- create `backend/.env` if it does not already exist
-- start the PostgreSQL development database with Docker Compose
-- run Ruff checks
-- run the backend tests
-
-
-
-### Windows PowerShell
-
-From the project root folder/directory, run:
-
-```powershell
-git pull
-.\update_backend.ps1
-```
-
-The update script will automatically:
-
-- reuse the existing Python virtual environment
-- install any new backend dependencies
-- create `backend\.env` if it does not already exist
-- start the PostgreSQL development database with Docker Compose
-- run Ruff checks
-- run the backend tests
-
-
-
-## Verify the Backend..... with..
-
-### Mac / Linux
-
-From the project root:
-
-```bash
-source backend/.venv/bin/activate
-cd backend
-uvicorn app.main:app --reload
-```
-
-### Windows PowerShell
-
-From the project root:
-
-```powershell
-backend\.venv\Scripts\Activate.ps1
-cd backend
-uvicorn app.main:app --reload
-```
-
-
-### Backend Health Check
-
-Open browser::
-
-
-http://127.0.0.1:8000/health
-
-Expected response:
-
-```json
-{"status":"ok"}
-```
-
-### Database Health Check
-
-Open browser:
-
-http://127.0.0.1:8000/health/db
-
-
-Expected response:
-
-```json
-{"database":"ok"}
-```
-
-If both endpoints return the expected responses, the FastAPI backend and PostgreSQL development database are working correctly.
-
-
-### Account roles and the presentation demo
-
-Public registration creates a **Volunteer** account. Volunteers can discover, save,
-claim, release, and mark civic tasks complete, then review their private Participation
-history. A database constraint permits only one active volunteer claim per task.
-Completing a contribution records participation; it does not close the source issue.
-
-**Maintainers** get a Manage issues workspace for repositories assigned by an
-administrator. They can correct skills, civic topics, difficulty, and estimated hours.
-Corrections are stored separately from original source metadata and recorded in the
-audit log; discovery and matching use the corrected values.
-
-**Administrators** get an Administration workspace for assigning roles and maintainer
-repositories, enabling/disabling sources, and reviewing recent audit activity.
-Every role retains volunteer access. The last administrator cannot be demoted.
-Privileged access is checked on the server, including repository-level assignments.
-
-To create presentation accounts and seed the fictional civic repository, run from
-`backend` with the same database configuration as the server:
-
-```sh
-python -m app.bootstrap
-```
-
-Use the operating-system-specific virtual-environment commands in Quick demo setup
-above if your environment is not activated.
-
-This prints a separately generated password for each new account:
-`volunteer@civic.demo`, `maintainer@civic.demo`, and `administrator@civic.demo`.
-Passwords are stored as hashes. Rerunning preserves existing accounts and does not
-reset passwords. Keep the printed credentials for the presentation.
-The bootstrap command is an explicit local setup operation, not a public API.
-
-The application applies additive schema version 1 at startup, introducing role,
-repository-access, active-claim, history, metadata-correction, and audit tables
-without replacing existing users or issues.
-
-### Architecture and current scope
-
-The responsive React client is the presentation layer. `app/main.py` and
-`app/application.py` handle HTTP validation and coordinate requests. `app/accounts.py`,
-`app/tasks.py`, `app/discovery.py`, `app/services.py`, `app/matching.py`, and existing
-connector/ingestion modules contain domain operations. `app/store.py` and
-`app/migrations.py` define relational persistence and additive schema initialization.
-
-This is the agreed approximate 50% demonstration scope. The local fake repository
-remains the presentation source. Scheduled scanning, live repository integration,
-feedback-driven matching, notifications/email, and advanced administration/settings
-are deferred. Existing external connector code is retained for later integration.
+Results are cached in `issue_enrichments`; changed issue content, public project context, extraction version or model invalidates the cached suggestions. Curator overrides remain authoritative. Empty/unknown and validation-rejected results are cached too, avoiding repeated charges for unusable output. Re-running processes new or changed issues; provider failures remain retryable. The administrator page displays processing progress and the latest run's estimated spend; issue details and the curator editor show evidence quotations. Browsing makes **no AI calls** and works without an API key once data is enriched. New/changed issues need another explicit enrichment run; hourly GitHub synchronization does not spend AI credits automatically.

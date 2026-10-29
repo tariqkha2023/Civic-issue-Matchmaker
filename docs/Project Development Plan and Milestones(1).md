@@ -1,6 +1,8 @@
+> Current GitHub-based scope and approved applicability changes: [Master project scope](PROJECT_SCOPE.md) and [Requirements status](REQUIREMENTS_STATUS.md). Earlier exclusive-claim and physical-volunteering demo assumptions do not govern the new implementation.
+
 # Course: EGN4950C 
 
-# Group 12
+# Group 26
 
 # **Civil Issue Matchmaker-Work Breakdown Structure (WBS)**
 

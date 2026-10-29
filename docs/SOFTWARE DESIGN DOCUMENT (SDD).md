@@ -1,10 +1,12 @@
+> Current GitHub-based scope and approved applicability changes: [Master project scope](PROJECT_SCOPE.md) and [Requirements status](REQUIREMENTS_STATUS.md). Earlier exclusive-claim and physical-volunteering demo assumptions do not govern the new implementation.
+
 # SOFTWARE DESIGN DOCUMENT (SDD)
 
 Civic Issue Matchmaker
 
 Course: EGN 4950C - Engineering Design 1
 
-Prepared by: Group 12
+Prepared by: Group 26
 
 Davian Brooks | Michael Anstett | Tariq Khan | Andre Walia | David Landivar
 
@@ -20,7 +22,7 @@ Revision History
 
 | Version | Date | Authors | Description |
 | --- | --- | --- | --- |
-| 1.0 | July 2026 | Group 12 | Initial complete SDD aligned with the approved Civic Issue Matchmaker SRS. |
+| 1.0 | July 2026 | Group 26 | Initial complete SDD aligned with the approved Civic Issue Matchmaker SRS. |
 
 ## Table of Contents
 
@@ -64,7 +66,7 @@ The design does not assume a specific repository vendor, cloud provider, databas
 
 ### 1.3 Intended Audience
 
-The intended audience includes the Group 12 development team, course instructors, system testers, repository maintainers, system administrators, and future developers responsible for implementation or maintenance.
+The intended audience includes the Group 26 development team, course instructors, system testers, repository maintainers, system administrators, and future developers responsible for implementation or maintenance.
 
 ### 1.4 Definitions, Acronyms, and Abbreviations
 
@@ -87,7 +89,7 @@ The intended audience includes the Group 12 development team, course instructors
 
 - IEEE Computer Society. (1998). IEEE Std 830-1998: IEEE Recommended Practice for Software Requirements Specifications.
 
-- Group 12. (2026). Civic Issue Matchmaker Software Requirements Specification, Version 1.0.
+- Group 26. (2026). Civic Issue Matchmaker Software Requirements Specification, Version 1.0.
 
 - Code for America. Civic Issue Finder repository, used as project inspiration.
 
@@ -459,9 +461,9 @@ The system must not imply that a recommendation guarantees acceptance by a sourc
 
 ## 11. References
 
-Code for America. (n.d.). Civic Issue Finder. GitHub repository. Project inspiration referenced by the Group 12 SRS.
+Code for America. (n.d.). Civic Issue Finder. GitHub repository. Project inspiration referenced by the Group 26 SRS.
 
-Group 12. (2026). Civic Issue Matchmaker Software Requirements Specification (Version 1.0). EGN 4950C - Senior Design I.
+Group 26. (2026). Civic Issue Matchmaker Software Requirements Specification (Version 1.0). EGN 4950C - Senior Design I.
 
 Institute of Electrical and Electronics Engineers. (1998). IEEE Std 1016-1998: IEEE Recommended Practice for Software Design Descriptions (reaffirmed 2009).
 

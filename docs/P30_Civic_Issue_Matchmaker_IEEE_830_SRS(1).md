@@ -1,9 +1,11 @@
+> Current GitHub-based scope and approved applicability changes: [Master project scope](PROJECT_SCOPE.md) and [Requirements status](REQUIREMENTS_STATUS.md). Earlier exclusive-claim and physical-volunteering demo assumptions do not govern the new implementation.
+
 # EGN 4950C - Senior Design I
 
 SOFTWARE REQUIREMENTS SPECIFICATION
 Civic Issue Matchmaker
 
-Group 12
+Group 26
 
 Prepared in accordance with IEEE Std 830-1998
 

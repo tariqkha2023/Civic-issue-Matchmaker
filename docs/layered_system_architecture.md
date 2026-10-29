@@ -1,3 +1,5 @@
+> Current GitHub-based scope and approved applicability changes: [Master project scope](PROJECT_SCOPE.md) and [Requirements status](REQUIREMENTS_STATUS.md). Earlier exclusive-claim and physical-volunteering demo assumptions do not govern the new implementation.
+
 The image is a **layered system architecture diagram** titled **“Civic Issue Matchmaker – Layered System Architecture.”** It is laid out as a large rectangular diagram with the system’s internal layers stacked vertically from top to bottom, and external systems shown off to the right. Arrows indicate communication between components. The color scheme distinguishes architectural layers and external services.
 
 Starting at the very top center is the title, in bold black text: **“Civic Issue Matchmaker – Layered System Architecture.”**
