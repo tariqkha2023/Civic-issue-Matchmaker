@@ -21,11 +21,10 @@ test('Discover preserves filters and pagination while distinguishing unknown met
  await expect(page.getByText('0/100 match score',{exact:true})).toBeVisible();
  await page.getByLabel('Civic cause',{exact:true}).fill('Humanitarian mapping');
  await page.getByLabel('Technical skill',{exact:true}).fill('python');
- await page.getByRole('combobox',{name:'Experience level',exact:true}).selectOption('Beginner');
  await page.getByRole('combobox',{name:'Project',exact:true}).selectOption('hotosm/tasking-manager');
  await page.getByRole('combobox',{name:'GitHub issue state',exact:true}).selectOption('closed');
  await page.getByRole('combobox',{name:'GitHub assignment',exact:true}).selectOption('unassigned');
- await expect.poll(()=>Object.fromEntries(requests.at(-1))).toMatchObject({page:'1',topic:'Humanitarian mapping',skill:'python',difficulty:'Beginner',repository:'hotosm/tasking-manager',status:'closed',assignment:'unassigned'});
+ await expect.poll(()=>Object.fromEntries(requests.at(-1))).toMatchObject({page:'1',topic:'Humanitarian mapping',skill:'python',repository:'hotosm/tasking-manager',status:'closed',assignment:'unassigned'});
  await expect(page.getByText('Not enough information to score',{exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Clear all',exact:true}).click();
  await expect.poll(()=>Object.fromEntries(requests.at(-1))).toEqual({page:'1',status:'open',sort:'compatibility'});

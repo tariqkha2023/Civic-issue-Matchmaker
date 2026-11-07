@@ -7,7 +7,7 @@ const databaseUrl = 'sqlite:///' + resolve('.e2e/civic.db').replaceAll(String.fr
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: 'civic.spec.js',
+  testMatch: ['civic.spec.js', 'interpretation.spec.js'],
   fullyParallel: false,
   workers: 1,
   use: { baseURL: browserOrigin, trace: 'retain-on-failure' },

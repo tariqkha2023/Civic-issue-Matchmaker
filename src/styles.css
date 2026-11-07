@@ -274,6 +274,8 @@ details{margin-top:18px}summary{cursor:pointer;color:#19594f;font-weight:600}
 .matchOverview{background:#f1f6f3;border-radius:8px;padding:14px 16px;margin:18px 0}
 .matchOverview strong{color:#214b3c;font-size:15px}
 .matchOverview p{font-size:13px;color:#40584e;line-height:1.6;margin:6px 0 0;max-width:78ch}
+.matchOverview .matchBasis{border-top:1px solid #cbdcd2;margin-top:12px;padding-top:10px}
+.matchOverview .matchBasis summary{font-size:13px;font-weight:600;color:#214b3c;cursor:pointer}
 .discoverIssue details{border-top:1px solid #e0e6e3;padding-top:8px;margin-top:12px}
 .discoverIssue summary{padding:10px 0;min-height:44px;font-size:14px}
 .originalIssue{font:13px/1.6 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere;background:#f6f8f7;padding:16px;border-radius:8px}
@@ -283,3 +285,8 @@ details{margin-top:18px}summary{cursor:pointer;color:#19594f;font-weight:600}
 @media(max-width:600px){.discoveryGuide{grid-template-columns:1fr;gap:12px}.discoverFilters .filterGrid,.issueFacts{grid-template-columns:1fr}.discoverIssue .taskHeader{align-items:flex-start}.discoverIssue .taskActions{display:grid;grid-template-columns:1fr}.projectContext{margin-bottom:20px}.discoveryHead h1{font-size:28px}.discoveryHead{padding:28px 14px 20px}}
 
 .discoveryHead p{max-width:78ch;line-height:1.6}
+.issueInterpretation{font-size:14px;line-height:1.65;max-width:78ch;margin:18px 0}
+.issueInterpretation h3{font-size:14px;margin:14px 0 4px}
+.issueInterpretation p,.issueInterpretation ul{margin:4px 0 12px}
+.issueInterpretation ul{padding-left:22px}
+.interpretationUncertainty{border-left:3px solid #a98132;background:#fff9eb;padding:4px 14px;color:#624b20}

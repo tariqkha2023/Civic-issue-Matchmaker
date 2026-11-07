@@ -79,7 +79,7 @@ def test_topic_and_repo_alone_never_produce_fit():
     assert score(profile, meta, "hackforla/website")[0] is None
     meta["skills"] = ["python"]
     value, explanation = score(profile, meta, "hackforla/website")
-    assert value == 15
+    assert value == 20
     assert any("python" in line for line in explanation)
     assert score({**profile, "repositories": []}, meta, "hackforla/website")[0] == value
 
@@ -113,6 +113,7 @@ def test_budgeted_extraction_sends_only_issue_text_and_reuses_cache(
             if "Improve Python" in text
             else {"skills": [], "difficulty": None, "difficulty_reason": None}
         )
+        result["interpretation"] = None
         return httpx.Response(
             200,
             json={
@@ -160,7 +161,9 @@ def test_ai_metadata_used_by_discovery_and_invalidated_on_edit(client, db_engine
     )
     result = client.get("/api/recommendations?skill=accessibility").json()
     assert result["items"][0]["id"] == ids[3]
-    assert result["items"][0]["score"] == 60
+    assert result["items"][0]["score"] == 100
+    assert result["items"][0]["coverage"] == 80
+    assert result["items"][0]["score_version"] == "skills-interests-v5"
     assert "AI enriched" in result["items"][0]["metadata_origin"]
     assert client.get("/api/recommendations?q=accessibility").json()["total"] == 1
     with Session(db_engine) as db:
@@ -307,7 +310,7 @@ def test_revised_prompt_keeps_inferred_skills_and_curator_overrides_them(db_engi
         )
 
 
-def test_matching_inferred_skill_earns_half_the_points_of_a_stated_skill():
+def test_matching_inferred_skill_has_half_the_weight_of_a_stated_skill():
     profile = {"skills": ["python"]}
     meta = {
         "skills": ["python", "css"],
@@ -315,11 +318,11 @@ def test_matching_inferred_skill_earns_half_the_points_of_a_stated_skill():
         "difficulty": None,
         "effort": None,
     }
-    assert score(profile, meta, "civic/test")[0] == 30
+    assert score(profile, meta, "civic/test")[0] == 50
     meta["skill_weights"] = {"python": 1, "css": 0.5}
-    assert score(profile, meta, "civic/test")[0] == 30
+    assert score(profile, meta, "civic/test")[0] == 66.7
     # Matching the inferred skill earns half the points of a stated skill.
-    assert score({"skills": ["css"]}, meta, "civic/test")[0] == 15
+    assert score({"skills": ["css"]}, meta, "civic/test")[0] == 33.3
 
 
 def test_project_context_changes_invalidate_cached_interpretation(db_engine):
@@ -338,7 +341,8 @@ def test_project_context_changes_invalidate_cached_interpretation(db_engine):
         assert cached_fields(task, row, {"languages": ["perl"]}) == {}
 
 
-def test_fixed_scale_prevents_sparse_matches_from_becoming_one_hundred_percent():
+def test_alignment_and_evidence_are_separate_and_ignore_effort_and_experience():
+    from app.matching import evidence_strength
     profile = {
         "skills": ["javascript"],
         "interests": ["civic participation"],
@@ -352,10 +356,19 @@ def test_fixed_scale_prevents_sparse_matches_from_becoming_one_hundred_percent()
         "difficulty": None,
         "effort": None,
     }
-    assert score(profile, meta, "civic/project")[0] == 75
+    assert score(profile, meta, "civic/project")[0] == 100
+    assert evidence_strength(meta) == 100
     meta["skill_weights"] = {"javascript": 0.5}
-    assert score(profile, meta, "civic/project")[0] == 45
+    assert score(profile, meta, "civic/project")[0] == 100
+    assert evidence_strength(meta) == 60
     meta.update(difficulty="Beginner", effort=5)
-    assert score(profile, meta, "civic/project")[0] == 70
+    assert score(profile, meta, "civic/project")[0] == 100
+    assert evidence_strength(meta) == 60
     meta["skill_weights"] = {"javascript": 1}
     assert score(profile, meta, "civic/project")[0] == 100
+    meta["topics"] = []
+    assert score(profile, meta, "civic/project")[0] == 100
+    assert evidence_strength(meta) == 80
+    meta["skill_weights"] = {"javascript": 0.5}
+    assert evidence_strength(meta) == 40
+    assert score({**profile, "level": "Advanced", "hours": 0}, meta, "civic/project")[0] == 100

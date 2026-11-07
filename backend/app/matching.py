@@ -25,7 +25,7 @@ SKILLS = [
     "postgresql",
     "fastapi",
 ]
-SCORE_VERSION = "evidence-v4"
+SCORE_VERSION = "skills-interests-v5"
 LEVELS = ["Beginner", "Intermediate", "Advanced"]
 
 
@@ -84,52 +84,25 @@ def score(profile, metadata, repository, history=None):
         weights = {s: metadata.get("skill_weights", {}).get(s, 1.0) for s in required}
         total_skill_weight = sum(weights.values())
         fit = sum(weights[s] for s in skills & required) / total_skill_weight
-        reliability = total_skill_weight / len(required)
         factors.append(
             (
-                0.60 * reliability,
+                0.80,
                 fit,
                 f"Skills: {len(skills & required)} of {len(required)} assessed skills match.",
             )
         )
     inferred = [s for s in required if metadata.get("skill_weights", {}).get(s, 1) < 1]
-    if metadata["topics"]:
+    if metadata["topics"] and interests:
         fit = len(interests & {s.lower() for s in metadata["topics"]}) / len(
             metadata["topics"]
         )
         factors.append(
             (
-                0.15,
+                0.20,
                 fit,
                 "Interests align with this topic."
                 if fit
                 else "This topic is outside your listed interests.",
-            )
-        )
-    if metadata["difficulty"]:
-        task_level = LEVELS.index(metadata["difficulty"])
-        experience = LEVELS.index(profile.get("level", "Beginner"))
-        preference = LEVELS.index(profile.get("difficulty", "Beginner"))
-        fit = (
-            max(0, 1 - max(0, task_level - experience) / 2)
-            + max(0, 1 - abs(task_level - preference) / 2)
-        ) / 2
-        factors.append(
-            (
-                0.20,
-                fit,
-                f"Difficulty is {metadata['difficulty']}; your experience is {LEVELS[experience]} and preference is {LEVELS[preference]}.",
-            )
-        )
-    if metadata["effort"] is not None:
-        effort = metadata["effort"]
-        hours = profile.get("hours", 0)
-        fit = min(1, hours / effort) if effort else 1
-        factors.append(
-            (
-                0.05,
-                fit,
-                f"Estimated effort: {effort:g} hours; your availability: {hours:g} hours/week.",
             )
         )
     if repository.lower() in profile.get("repositories", []):
@@ -138,11 +111,11 @@ def score(profile, metadata, repository, history=None):
         preference = None
     total = sum(w for w, _, _ in factors)
     result = (
-        round(100 * sum(w * value for w, value, _ in factors), 1) if total else None
+        round(100 * sum(w * value for w, value, _ in factors) / total, 1) if total else None
     )
     explanations = [message for _, _, message in factors]
     explanations.append(
-        f"Evidence-backed score out of 100; available evidence supports at most {100 * total:g} points. Unassessed factors remain unknown."
+        "Match score compares available skills and civic interests (80/20 when both are known). Unknown factors are omitted and remaining weights rescaled. Evidence strength is reported separately; this is not a probability of success."
     )
     if inferred:
         explanations.append(
@@ -173,3 +146,11 @@ def score(profile, metadata, repository, history=None):
             ][: 2 - len(explanations)]
         )
     return result, explanations
+
+
+def evidence_strength(metadata):
+    """Evidence availability, not calibrated confidence or task completeness."""
+    skills = set(metadata.get("skills", []))
+    weights = metadata.get("skill_weights", {})
+    reliability = sum(weights.get(s, 1) for s in skills) / len(skills) if skills else 0
+    return round(80 * reliability + (20 if metadata.get("topics") else 0))

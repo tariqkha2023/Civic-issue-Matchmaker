@@ -19,7 +19,14 @@ from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.enrichment_prompt import PROMPT_VERSION, SYSTEM_PROMPT, Requirements
+from app.enrichment_prompt import (
+    PROMPT_VERSION,
+    SYSTEM_PROMPT,
+    InterpretationResult,
+    IssueInterpretation,
+    Requirements,
+)
+from app.enrichment_prompt_legacy import PROMPT_VERSION as LEGACY_PROMPT_VERSION
 from app.store import (
     EnrichmentRun,
     IssueEnrichment,
@@ -31,6 +38,8 @@ from app.store import (
 
 MODEL = "deepseek/deepseek-v3.2"
 VERSION = PROMPT_VERSION + "-production-v1"
+LEGACY_VERSION = LEGACY_PROMPT_VERSION + "-production-v1"
+MAX_OUTPUT_TOKENS = 3000
 INPUT_CEILING = 0.35
 OUTPUT_CEILING = 0.60
 
@@ -54,10 +63,10 @@ def public_text(task):
     )[:14000]
 
 
-def fingerprint(task, project=None):
+def fingerprint(task, project=None, *, version=VERSION):
     return hashlib.sha256(
         (
-            VERSION
+            version
             + MODEL
             + json.dumps(
                 [
@@ -72,10 +81,23 @@ def fingerprint(task, project=None):
     ).hexdigest()
 
 
+def cache_matches(task, row, project=None):
+    return bool(row and row.model == MODEL and row.content_hash in {
+        fingerprint(task, project),
+        fingerprint(task, project, version=LEGACY_VERSION),
+    })
+
+
 def cached_fields(task, row, project=None):
-    if row is None or row.content_hash != fingerprint(task, project):
+    if row is None or row.model != MODEL:
         return {}
-    return row.fields
+    if row.content_hash == fingerprint(task, project):
+        return row.fields
+    # Only this explicitly supported old version survives an upgrade. Source or
+    # project edits still invalidate it; the explicit job upgrades its old hash.
+    if row.content_hash == fingerprint(task, project, version=LEGACY_VERSION):
+        return {k: v for k, v in row.fields.items() if k != "interpretation"}
+    return {}
 
 
 def effective_metadata(task, enrichment=None, correction=None, project=None):
@@ -94,6 +116,13 @@ def effective_metadata(task, enrichment=None, correction=None, project=None):
         meta["ai_evidence"] = fields["evidence"]
         meta["ai_model"] = enrichment.model
         meta["ai_updated_at"] = enrichment.updated_at
+        if fields.get("interpretation"):
+            try:
+                meta["interpretation"] = validate_interpretation(
+                    task, fields["interpretation"]
+                )
+            except ValueError:
+                pass  # A malformed historical cache must not break browsing.
     meta.update(correction or {})
     if correction and "skills" in correction:
         meta["skill_weights"] = {skill: 1.0 for skill in correction["skills"]}
@@ -184,8 +213,24 @@ def validate_extraction(task, raw, *, check_evidence=True):
     }
 
 
+def validate_interpretation(task, raw):
+    result = IssueInterpretation.model_validate(raw)
+    source = public_text(task)
+    items = [result.summary, result.objective, *result.activities, *result.concepts]
+    for item in items:
+        if item is not None and item.source_quote not in source:
+            raise ValueError("Interpretation quotation is absent from the issue")
+    for concept in result.concepts:
+        if concept.text.casefold() not in concept.source_quote.casefold():
+            concept.basis = "inferred"
+    if any(not s.strip() or len(s) > 500 for s in result.uncertainties):
+        raise ValueError("Invalid uncertainty statement")
+    return result.model_dump()
+
+
 def interpret_requirements(task, raw):
-    result = Requirements.model_validate(raw)
+    structured = "interpretation" in raw
+    result = (InterpretationResult if structured else Requirements).model_validate(raw)
     source = " ".join(public_text(task).casefold().split())
     evidence = {}
     for item in result.skills:
@@ -194,9 +239,37 @@ def interpret_requirements(task, raw):
             continue
         quote = item.source_quote
         quote_matches = bool(quote and " ".join(quote.casefold().split()) in source)
-        # Never drop inferred skills for lacking literal keywords/quotations.
-        # An unsupported "explicit" claim is retained, labeled as inference.
+        if structured and not quote_matches:
+            continue  # New extractions require issue grounding even for inference.
+        # Legacy callers retain the prior inference behavior. New responses also
+        # need a skill anchor or supported project/activity inference below.
         basis = item.basis if item.basis == "inferred" or quote_matches else "inferred"
+        if structured and basis == "explicit":
+            grounded = validate_extraction(task, {
+                "skills": [{"skill": skill, "evidence": quote}],
+                "difficulty": None, "difficulty_evidence": None,
+            })
+            if not grounded["skills"]:
+                basis = "inferred"
+        if structured and basis == "inferred":
+            # A quotation existing is insufficient to justify an arbitrary stack.
+            # Specific technologies must be named in evidence or project context;
+            # a small set of activity synonyms can support broader skill inference.
+            anchored = validate_extraction(task, {
+                "skills": [{"skill": skill, "evidence": quote}],
+                "difficulty": None, "difficulty_evidence": None,
+            })["skills"]
+            languages = (getattr(task, "project", {}) or {}).get("languages") or []
+            activity_patterns = {
+                "accessibility": r"keyboard|screen.reader|assistive|contrast",
+                "testing": r"regression|test.coverage|test.case",
+                "documentation": r"instructions|tutorial|usage.guide",
+            }
+            implied = skill in activity_patterns and re.search(
+                activity_patterns[skill], quote, re.I
+            )
+            if not anchored and skill not in [s.lower() for s in languages] and not implied:
+                continue
         entry = {
             "skill": skill,
             "basis": basis,
@@ -205,13 +278,28 @@ def interpret_requirements(task, raw):
         }
         if skill not in evidence or basis == "explicit":
             evidence[skill] = entry
-    return {
+    difficulty = result.difficulty
+    if structured and difficulty:
+        try:
+            difficulty = validate_extraction(task, {
+                "skills": [], "difficulty": difficulty,
+                "difficulty_evidence": result.difficulty_reason,
+            })["difficulty"]
+        except ValueError:
+            difficulty = None
+    fields = {
         "skills": list(evidence),
         "evidence": list(evidence.values()),
-        "difficulty": result.difficulty,
-        "difficulty_evidence": result.difficulty_reason,
+        "difficulty": difficulty,
+        "difficulty_evidence": result.difficulty_reason if difficulty else None,
         "prompt_version": PROMPT_VERSION,
     }
+    if structured:
+        fields["interpretation"] = (
+            validate_interpretation(task, result.interpretation.model_dump())
+            if result.interpretation is not None else None
+        )
+    return fields
 
 
 def project_context(fields):
@@ -224,7 +312,7 @@ def extract(task, key, client):
         headers={"Authorization": f"Bearer {key}", "X-Title": "Civic Issue Matchmaker"},
         json={
             "model": MODEL,
-            "max_tokens": 1800,
+            "max_tokens": MAX_OUTPUT_TOKENS,
             "temperature": 0,
             "provider": {
                 "require_parameters": True,
@@ -234,9 +322,9 @@ def extract(task, key, client):
             "response_format": {
                 "type": "json_schema",
                 "json_schema": {
-                    "name": "minimal_requirements",
+                    "name": "issue_interpretation",
                     "strict": True,
-                    "schema": Requirements.model_json_schema(),
+                    "schema": InterpretationResult.model_json_schema(),
                 },
             },
             "messages": [
@@ -264,7 +352,7 @@ def extract(task, key, client):
     # Conservative provider ceilings; actual cost is used when supplied.
     estimate = (
         usage.get("prompt_tokens", 0) * INPUT_CEILING / 1e6
-        + usage.get("completion_tokens", 1800) * OUTPUT_CEILING / 1e6
+        + usage.get("completion_tokens", MAX_OUTPUT_TOKENS) * OUTPUT_CEILING / 1e6
     )
     cost = max(float(usage.get("cost") or 0), estimate)
     content = data["choices"][0]["message"].get("content")
@@ -276,12 +364,16 @@ def request_reserve(task):
     # instructions, and chat framing. Output is bounded by max_tokens.
     return (
         (
-            len(public_text(task).encode())
-            + len(json.dumps(getattr(task, "project", {})).encode())
-            + 9000
+            len(json.dumps({
+                "issue": public_text(task),
+                "project": getattr(task, "project", {}),
+            }, ensure_ascii=False).encode())
+            + len(SYSTEM_PROMPT.encode())
+            + len(json.dumps(InterpretationResult.model_json_schema()).encode())
+            + 2000
         )
         * INPUT_CEILING
-        + 1800 * OUTPUT_CEILING
+        + MAX_OUTPUT_TOKENS * OUTPUT_CEILING
     ) / 1e6
 
 
@@ -330,7 +422,7 @@ def run(limit=50, budget=0.25, db_engine=engine, transport=None, workers=4):
                 .order_by(Task.id.desc())
             ):
                 row = cached.get(task.id)
-                if row and row.content_hash == fingerprint(
+                if row and row.model == MODEL and row.content_hash == fingerprint(
                     task, projects.get(task.repository_id, {})
                 ):
                     continue
@@ -394,7 +486,8 @@ def run(limit=50, budget=0.25, db_engine=engine, transport=None, workers=4):
                         else:
                             spent += cost
                             try:
-                                fields = interpret_requirements(task, json.loads(raw))
+                                parsed = InterpretationResult.model_validate_json(raw)
+                                fields = interpret_requirements(task, parsed.model_dump())
                             except ValueError:
                                 fields = {
                                     "status": "rejected",

@@ -14,8 +14,23 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.enrichment import MODEL, VERSION, cached_fields, fingerprint, project_context
-from app.enrichment_prompt import PROMPT_VERSION, SYSTEM_PROMPT
+from app.enrichment import (
+    LEGACY_VERSION,
+    MODEL,
+    VERSION,
+    cache_matches,
+    cached_fields,
+    project_context,
+)
+from app.enrichment_prompt import (
+    PROMPT_VERSION,
+    SYSTEM_PROMPT,
+    GroundedText,
+    IssueInterpretation,
+    SearchConcept,
+)
+from app.enrichment_prompt_legacy import PROMPT_VERSION as LEGACY_PROMPT_VERSION
+from app.enrichment_prompt_legacy import SYSTEM_PROMPT as LEGACY_SYSTEM_PROMPT
 from app.migrations import migrate
 from app.store import (
     IssueEnrichment,
@@ -83,6 +98,7 @@ class CacheFields(PublicModel):
     difficulty: Literal["Beginner", "Intermediate", "Advanced"] | None
     difficulty_evidence: str | None = None
     prompt_version: str | None = None
+    interpretation: IssueInterpretation | None = None
 
 
 class Cache(PublicModel):
@@ -132,10 +148,8 @@ class Source(PublicModel):
             seen.add(issue.source_id)
             if issue.url != f"{base}/issues/{issue.upstream.number}":
                 raise ValueError("Invalid authoritative issue URL")
-            if issue.enrichment and (
-                issue.enrichment.model != MODEL
-                or issue.enrichment.content_hash
-                != fingerprint(issue, project_context(self.project.model_dump()))
+            if issue.enrichment and not cache_matches(
+                issue, issue.enrichment, project_context(self.project.model_dump())
             ):
                 raise ValueError("Cache does not match issue/project content")
         return self
@@ -153,9 +167,10 @@ class Snapshot(PublicModel):
 
     @model_validator(mode="after")
     def check_versions(self):
-        if (self.extraction_version, self.model, self.prompt_version, self.system_prompt) != (
-            VERSION, MODEL, PROMPT_VERSION, SYSTEM_PROMPT
-        ):
+        if (self.extraction_version, self.model, self.prompt_version, self.system_prompt) not in {
+            (VERSION, MODEL, PROMPT_VERSION, SYSTEM_PROMPT),
+            (LEGACY_VERSION, MODEL, LEGACY_PROMPT_VERSION, LEGACY_SYSTEM_PROMPT),
+        }:
             raise ValueError("Snapshot requires its matching extraction code/prompt version")
         ids = [source.project.github_id for source in self.sources]
         paths = [source.path.casefold() for source in self.sources]
@@ -205,9 +220,19 @@ def export_snapshot(path=DEFAULT_SNAPSHOT, db_engine=engine):
                 issue["metadata_fields"] = public_fields(Metadata, task.metadata_fields)
                 issue["upstream"] = public_fields(Upstream, info.fields)
                 cache = caches.get(task.id)
-                if cached_fields(task, cache, context):
-                    fields = public_fields(CacheFields, cache.fields)
+                usable_fields = cached_fields(task, cache, context)
+                if usable_fields:
+                    fields = public_fields(CacheFields, usable_fields)
                     fields["evidence"] = [public_fields(Evidence, item) for item in fields["evidence"]]
+                    interpretation = fields.get("interpretation")
+                    if interpretation:
+                        interpretation = public_fields(IssueInterpretation, interpretation)
+                        for key in ["summary", "objective"]:
+                            if interpretation.get(key):
+                                interpretation[key] = public_fields(GroundedText, interpretation[key])
+                        for key, model in [("activities", GroundedText), ("concepts", SearchConcept)]:
+                            interpretation[key] = [public_fields(model, item) for item in interpretation.get(key, [])]
+                        fields["interpretation"] = interpretation
                     issue["enrichment"] = {
                         "content_hash": cache.content_hash, "model": cache.model,
                         "fields": fields, "cost": cache.cost, "updated_at": cache.updated_at,
@@ -323,7 +348,7 @@ def import_snapshot(path=DEFAULT_SNAPSHOT, db_engine=engine):
                 cache = issue.enrichment
                 if cache:
                     existing = caches.get(task.id)
-                    if fingerprint(task, context) != cache.content_hash or (
+                    if not cache_matches(task, cache, context) or (
                         existing and existing.updated_at > cache.updated_at
                     ):
                         result["skipped_caches"] += 1

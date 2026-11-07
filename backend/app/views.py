@@ -3,7 +3,7 @@
 from sqlalchemy import select
 
 from app.enrichment import effective_metadata, project_context
-from app.matching import SCORE_VERSION, score
+from app.matching import SCORE_VERSION, evidence_strength, score
 from app.store import (
     AccountRole,
     Contribution,
@@ -123,31 +123,7 @@ def task_view(task, repo, saved=False, profile=None, db=None, user=None, context
         "feedback": {"relevant": feedback.relevant, "explanation": feedback.explanation}
         if feedback
         else None,
-        "coverage": round(
-            100
-            * sum(
-                w
-                * (
-                    sum(
-                        metadata.get("skill_weights", {}).get(s, 1)
-                        for s in metadata.get("skills", [])
-                    )
-                    / len(metadata["skills"])
-                    if key == "skills"
-                    else 1
-                )
-                for key, w in [
-                    ("skills", 0.60),
-                    ("topics", 0.15),
-                    ("difficulty", 0.20),
-                    ("effort", 0.05),
-                ]
-                if metadata.get(key) is not None
-                and metadata.get(key) != []
-                and metadata.get(key) != ""
-            )
-            / 1.0
-        ),
+        "coverage": evidence_strength(metadata),
     }
     if profile is not None:
         data["score"], data["explanations"] = score(

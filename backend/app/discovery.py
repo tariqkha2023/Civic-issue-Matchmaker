@@ -9,6 +9,35 @@ from app.store import IssueEnrichment, MetadataCorrection, Repository, SavedTask
 from app.views import projection_context, task_view
 
 
+def search_match(task, meta, terms):
+    """Only usable, current enrichment is searched; never provenance or uncertainty.
+
+    Concepts increase recall, not the match score. All query words must
+    match, in any order. Keep the SQL prefilter a superset of these fields.
+    """
+    source = " ".join([task.title, task.description, *task.labels,
+                       *task.metadata_fields.get("skills", []),
+                       *task.metadata_fields.get("topics", [])]).lower()
+    if all(term in source for term in terms):
+        return "source"
+    info = meta.get("interpretation") or {}
+    text = [*meta["skills"], *meta["topics"]]
+    for key in ["summary", "objective"]:
+        if info.get(key):
+            text.append(info[key]["text"])
+    text.extend(item["text"] for item in info.get("activities", []))
+    text.extend(item["text"] for item in info.get("concepts", []) if item["basis"] == "explicit")
+    interpreted = source + " " + " ".join(text).lower()
+    if all(term in interpreted for term in terms):
+        return "interpreted"
+    expanded = interpreted + " " + " ".join(
+        item["text"] for item in info.get("concepts", []) if item["basis"] == "inferred"
+    ).lower()
+    if all(term in expanded for term in terms):
+        return "inferred_concept"
+    return None
+
+
 def discover(
     db,
     user,
@@ -36,9 +65,10 @@ def discover(
         statement = statement.where(Task.status == status)
     if repository:
         statement = statement.where(Repository.path == repository)
-    if q:
+    terms = q.lower().split()
+    for term in terms:
         pattern = (
-            "%" + q.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
+            "%" + term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
         )
         statement = statement.where(
             or_(
@@ -83,17 +113,8 @@ def discover(
             if repo.id in context["projects"]
             else {},
         )
-        if (
-            q
-            and q.lower()
-            not in (
-                task.title
-                + " "
-                + task.description
-                + " "
-                + " ".join(task.labels + meta["skills"] + meta["topics"])
-            ).lower()
-        ):
+        match = search_match(task, meta, terms)
+        if terms and match is None:
             continue
         if topic and topic.lower() not in [t.lower() for t in meta["topics"]]:
             continue
@@ -105,13 +126,15 @@ def discover(
             meta["effort"] is None or meta["effort"] > max_effort
         ):
             continue
-        results.append(
-            task_view(task, repo, task.id in saved, user.profile, db, user, context)
-        )
+        view = task_view(task, repo, task.id in saved, user.profile, db, user, context)
+        if terms:
+            view["search_match"] = match
+        results.append(view)
     levels = {"Beginner": 0, "Intermediate": 1, "Advanced": 2}
     keys = {
         "compatibility": lambda t: (
             -(t["score"] if t["score"] is not None else -1),
+            -t["coverage"],
             int(t["feedback"] is not None and not t["feedback"]["relevant"]),
             -int(t["id"] in context["completed"]),
             -int(t["repository"].lower() in user.profile.get("repositories", [])),
@@ -132,6 +155,5 @@ def discover(
         "total": len(results),
         "page": page,
         "profile_incomplete": not user.profile.get("skills")
-        or not user.profile.get("interests")
-        or not user.profile.get("hours"),
+        or not user.profile.get("interests"),
     }

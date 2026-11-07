@@ -211,7 +211,7 @@ def test_scoring_unknown_and_preference():
     assert derive_metadata(["bug"])["effort"] is None
     assert (
         score({**strong, "difficulty": "Advanced"}, meta, "civic/transit")[0]
-        < score(strong, meta, "civic/transit")[0]
+        == score(strong, meta, "civic/transit")[0]
     )
 
 
