@@ -1,4 +1,5 @@
 import {discover} from './discovery-search.js';
+import {profileMatch} from './profile-match.js';
 
 const el = id => document.getElementById(id);
 function node(tag, text, parent, className) {
@@ -18,13 +19,20 @@ function section(card, heading, text, className) {
   const box = className ? node('div', '', card, className) : card;
   node('h3', heading, box); node('p', text, box);
 }
-function card({issue: x, reason}, parent) {
+function card({issue: x, reason}, parent, profile) {
   const article = node('article', '', parent);
   article.id = `issue-${x.id}`;
   node('small', `${x.project[0]} · ${x.status} · ${x.assignment === 'unassigned' ? 'No assignee recorded' : x.assignment}`, article);
   node('h2', x.summary, article);
   node('p', `Original title: ${x.title}`, article, 'original-title');
   if (reason) node('p', reason, article, 'reason');
+  const match = profileMatch(x, profile);
+  const scoreBox = node('section', '', article, 'match-panel');
+  scoreBox.setAttribute('aria-label', 'Personal match score');
+  node('h3', 'Estimated match score · test profile', scoreBox);
+  node('strong', match.score === null ? 'Insufficient information' : `${match.score}%`, scoreBox, 'match-value');
+  node('p', match.explanation, scoreBox);
+  node('small', 'Personal compatibility is separate from search relevance. Profile choices do not filter or reorder results.', scoreBox);
   section(article, 'What this project does', x.project[1], 'context');
   section(article, 'Background', x.background);
   section(article, 'Motivation', x.purpose);
@@ -72,14 +80,31 @@ try {
   }
   let page = 1;
   const pageSize = 5;
+  for (const [id, values] of [
+    ['profile-skills', ['Python','JavaScript','TypeScript','React','HTML','CSS','SQL','Documentation','Accessibility','Design','Testing','DevOps', ...issues.flatMap(x => [...x.recordedSkills, ...x.suggestedSkills.map(s => s.name)])]],
+    ['profile-interests', issues.flatMap(x => x.topics)],
+  ]) {
+    [...new Set(values)].sort().forEach(value => {
+      const label = node('label', '', el(id), 'check');
+      const checkbox = node('input', '', label);
+      checkbox.type = 'checkbox'; checkbox.value = value;
+      node('span', value, label);
+      checkbox.addEventListener('change', render);
+    });
+  }
+  function selected(id) {
+    return [...el(id).querySelectorAll('input:checked')].map(input => input.value);
+  }
   function render() {
+    const profile = {skills: selected('profile-skills'), interests: selected('profile-interests')};
+    el('profile-status').textContent = `${profile.skills.length} skills and ${profile.interests.length} civic interests selected. Results are not filtered by this profile.`;
     const filters = Object.fromEntries(['q','project','topic','skill','status','assignment','sort'].map(id => [id, el(id).value]));
     filters.includeSuggested = el('suggested').checked;
     const found = discover(issues, filters);
     page = Math.min(page, Math.max(1, Math.ceil(found.length / pageSize)));
     el('results').replaceChildren();
-    found.slice((page-1)*pageSize, page*pageSize).forEach(x => card(x, el('results')));
-    el('count').textContent = `${found.length} of 20 sample issues · Suggested skills ${filters.includeSuggested ? 'included' : 'excluded'} · No personal score changes`;
+    found.slice((page-1)*pageSize, page*pageSize).forEach(x => card(x, el('results'), profile));
+    el('count').textContent = `${found.length} of 20 sample issues · Suggested skills ${filters.includeSuggested ? 'included' : 'excluded'} in search · Estimated scores use your test profile`;
     el('empty').hidden = found.length !== 0;
     el('page').textContent = `Page ${page} of ${Math.max(1, Math.ceil(found.length/pageSize))}`;
     el('previous').disabled = page === 1;
@@ -91,6 +116,10 @@ try {
   el('clear').onclick = () => {
     ['q','project','topic','skill','status','assignment'].forEach(id => {el(id).value = '';});
     el('sort').value = 'relevance'; el('suggested').checked = true; page = 1; render();
+  };
+  el('clear-profile').onclick = () => {
+    document.querySelectorAll('.profile-panel input').forEach(input => {input.checked = false;});
+    render();
   };
   for (const [id, step] of [['previous',-1],['next',1]]) {
     el(id).onclick = () => {page += step; render(); el('count').scrollIntoView({block:'start'});};

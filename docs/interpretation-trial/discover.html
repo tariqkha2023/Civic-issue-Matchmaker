@@ -17,6 +17,17 @@
       <a href="context-review.html">View the original explanation preview</a>
     </details>
   </header>
+  <section class="profile-panel" aria-labelledby="profile-title">
+    <h2 id="profile-title">Your test profile</h2>
+    <p>Select your skills and civic interests to explore personal matching. These choices stay in this page’s memory and reset on refresh; no sign-in is needed.</p>
+    <p>Estimated scores compare your skills with the recorded and researched inferred skills for each task, plus your civic interests. Skills contribute 80% and interests 20% when both factors are available. Inferred skills are suggestions, not confirmed requirements. Select technical skills to see scores; the broad tracker without task-specific skills remains unscored.</p>
+    <div class="profile-columns">
+      <details><summary>Select technical skills</summary><fieldset id="profile-skills"><legend>Your technical skills</legend></fieldset></details>
+      <fieldset id="profile-interests"><legend>Your civic interests</legend></fieldset>
+    </div>
+    <p id="profile-status" role="status" aria-live="polite">No profile choices selected.</p>
+    <button id="clear-profile" type="button">Clear test profile</button>
+  </section>
   <section class="filters" aria-label="Search and filters">
     <label class="wide" for="q">Search tasks and concepts<input id="q" type="search" placeholder="Try frontend, potholes, login, or ingredients" aria-describedby="search-help"></label>
     <p id="search-help" class="wide">All words must match, in any order. Related wording such as “login” and “sign-in” is supported.</p>
@@ -27,6 +38,7 @@
     <label for="assignment">Recorded assignment<select id="assignment"><option value="">Any assignment</option><option value="unassigned">No assignee recorded</option><option value="assigned">Assigned</option><option value="unknown">Unknown</option></select></label>
     <label for="sort">Sort<select id="sort"><option value="relevance">Search relevance</option><option value="sample">Original sample order</option></select></label>
     <label class="wide check" for="suggested"><input id="suggested" type="checkbox" checked> Include suggested skills in search and skill filtering</label>
+    <p class="wide">This switch controls discovery only. Estimated match scores continue to use inferred skills.</p>
     <div class="wide"><button id="clear" type="button">Clear all filters</button></div>
   </section>
   <p id="count" role="status" aria-live="polite">Loading the sample…</p>
