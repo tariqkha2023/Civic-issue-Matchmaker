@@ -1,0 +1,77 @@
+{
+  "21542": [
+    {"name":"Web mapping","reason":"The request changes how background map imagery is configured.","quote":"add a parameter for custom backgrounds to define the tileSize"},
+    {"name":"Configuration handling","reason":"The requested feature exposes a configurable tile size.","quote":"add a parameter for custom backgrounds to define the tileSize"}
+  ],
+  "21550": [
+    {"name":"Frontend development","reason":"The request adds information to the editor’s feature display.","quote":"when showing \"point\" there on the left under Feature Type, please also mention that it is a part of something"},
+    {"name":"UX writing","reason":"The display needs to communicate that the selected point belongs to another object.","quote":"please also mention that it is a part of something"}
+  ],
+  "21549": [
+    {"name":"Web mapping","reason":"The request concerns editing overlapping map objects on different floors.","quote":"allow stacked node tag changes"},
+    {"name":"Troubleshooting","reason":"The reporter describes changes affecting several floors unexpectedly.","quote":"the editor kept updateing all version of the nodes for all levels"}
+  ],
+  "21534": [
+    {"name":"Frontend development","reason":"The symptom is an icon remaining in the editor menu.","quote":"stuck on the left menu"},
+    {"name":"Troubleshooting","reason":"The reporter cannot reliably repeat the problem, so investigation is needed.","quote":"I have been unable to reproduce this myself."}
+  ],
+  "7519": [
+    {"name":"Frontend development","reason":"The proposed tooltip changes the project listing interface.","quote":"best be placed in a tooltip"},
+    {"name":"Interaction design","reason":"The request requires presenting additional information in limited space.","quote":"Since the space is limited"}
+  ],
+  "7522": [
+    {"name":"Date handling","reason":"The default date must be calculated relative to project creation.","quote":"setting a default of 30 days from creation"}
+  ],
+  "7523": [
+    {"name":"UX writing","reason":"The request asks for informative, actionable error messages.","quote":"providing additional information of the error and guiding the user"},
+    {"name":"Error handling","reason":"The change concerns what the application communicates after an error.","quote":"general error message modals"}
+  ],
+  "7524": [
+    {"name":"Authentication","reason":"The failure occurs when the user permits access to an OpenStreetMap account.","quote":"allow Tasking Manager to access their OSM account"},
+    {"name":"Troubleshooting","reason":"The reported account-access failure needs investigation; its cause is unknown.","quote":"every time the user clicked the button"}
+  ],
+  "9076": [
+    {"name":"Web mapping","reason":"The request concerns displaying routes at a useful map zoom level.","quote":"at a sufficient level of zoom to place a pin"}
+  ],
+  "9078": [
+    {"name":"Template development","reason":"The request adds existing email templates to a developer preview list.","quote":"email templates have not yet been added to the developer email preview list"}
+  ],
+  "9079": [
+    {"name":"Frontend development","reason":"The requested behavior concerns the sign-in form’s code input.","quote":"The form should be updated to auto-delete or disregard spaces"},
+    {"name":"Input validation","reason":"The form rejects codes containing spaces even though they can be entered.","quote":"local form validation prevents submission of non-numeric characters"}
+  ],
+  "9080": [
+    {"name":"Monitoring","reason":"The proposed page checks report-delivery conditions.","quote":"Any reports unsent after N hours"},
+    {"name":"Backend development","reason":"Checking unsent reports and council contact records likely involves application data processing; the implementation is not specified.","quote":"Unconfirmed email addresses in the contacts for councils"}
+  ],
+  "13462": [
+    {"name":"Data processing","reason":"Several tracker items concern reading and submitting quantities in different units.","quote":"retrieving quantity in either metric or imperial units"},
+    {"name":"Frontend development","reason":"Other tracker items request nutrition input and display layouts; this applies to those subtasks only.","quote":"Create a nutrition input that has exactly the same layout"}
+  ],
+  "13463": [],
+  "13465": [
+    {"name":"Search development","reason":"The requested capability finds or lists products by weight.","quote":"Being able to search or list by weight"}
+  ],
+  "13467": [
+    {"name":"Data processing","reason":"The proposal groups ingredients and computes their distribution across products.","quote":"each ingredient is matched against the specified list of parents ingredients"},
+    {"name":"Statistical analysis","reason":"The proposal explicitly mentions summary statistics.","quote":"basic stats (mean, variance etc.)"},
+    {"name":"Data visualization","reason":"The proposal includes graphs of ingredient distributions.","quote":"distribution graphs"}
+  ],
+  "5147": [
+    {"name":"API integration","reason":"The demonstration reads meeting times from an API.","quote":"parse and read meetings times from our [vrms api]"},
+    {"name":"Scripting","reason":"The feasibility study asks whether a program can edit documentation automatically.","quote":"Assess whether a program can"},
+    {"name":"Documentation automation","reason":"The proposed program updates wiki and contributing documentation.","quote":"automatic updates on the wiki and our contributing documentation"}
+  ],
+  "5167": [
+    {"name":"Repository administration","reason":"The checklist requests creating a repository and granting team access.","quote":"Add relevant team members to the website-prod repository"},
+    {"name":"Domain configuration","reason":"The checklist asks for a domain for the development website.","quote":"Provide a domain name"}
+  ],
+  "5168": [
+    {"name":"Website deployment","reason":"The checklist connects website files to hosted addresses.","quote":"Host the files"},
+    {"name":"Repository administration","reason":"The checklist calls for moving files between the team’s repositories.","quote":"Move files from hackforla/website-dev to hackforla/website"}
+  ],
+  "5169": [
+    {"name":"Technical writing","reason":"The requested documentation explains programs and steps for propagating website changes.","quote":"Write documentation that reflects the above mentioned process"},
+    {"name":"Version control","reason":"Remaining research concerns preserving contributor credit and selecting which changes to synchronize.","quote":"Is it possible to only sync certain files/features?"}
+  ]
+}

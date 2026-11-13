@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Civic Issue Matchmaker — Search trial</title>
+  <link rel="stylesheet" href="trial.css">
+</head>
+<body><main>
+  <header><p class="eyebrow">CIVIC ISSUE MATCHMAKER · 20-ISSUE PILOT</p>
+    <h1>Discover work you understand</h1>
+    <p>Search the expanded explanations and explore skills that could help with each task.</p>
+    <details class="notice"><summary>About this search trial</summary>
+      <p>These are the same 20 saved issues, with explanations and skill suggestions researched in this chat. No AI requests run during browsing. This page is a separate experiment; the main Discover page, saved issues, tracking and personal match scores are unchanged.</p>
+      <p>Suggested skills are possibilities, not author-confirmed requirements. Earlier AI language guesses are not treated as confirmed skills. All 20 samples lack skills in their original metadata. Civic causes use existing project-topic metadata. State and assignment come from the local snapshot exported November 13, 2026; check GitHub for current information. Open or unassigned does not mean ready to start.</p>
+      <p>Search ranks task wording before original text, suggested skills, and background context. A small reviewed synonym list connects related wording. This is keyword search, not general semantic understanding. Uncertainty notes and suggestion rationales are excluded. Ranking is search relevance, not a personal match score.</p>
+      <a href="context-review.html">View the original explanation preview</a>
+    </details>
+  </header>
+  <section class="filters" aria-label="Search and filters">
+    <label class="wide" for="q">Search tasks and concepts<input id="q" type="search" placeholder="Try frontend, potholes, login, or ingredients" aria-describedby="search-help"></label>
+    <p id="search-help" class="wide">All words must match, in any order. Related wording such as “login” and “sign-in” is supported.</p>
+    <label for="project">Project<select id="project"><option value="">All projects</option></select></label>
+    <label for="topic">Civic cause<select id="topic"><option value="">All causes</option></select></label>
+    <label for="skill">Technical skill<select id="skill"><option value="">All skills</option></select></label>
+    <label for="status">Recorded GitHub state<select id="status"><option value="">All states</option><option value="open">Open</option><option value="closed">Closed</option><option value="unknown">Unknown</option></select></label>
+    <label for="assignment">Recorded assignment<select id="assignment"><option value="">Any assignment</option><option value="unassigned">No assignee recorded</option><option value="assigned">Assigned</option><option value="unknown">Unknown</option></select></label>
+    <label for="sort">Sort<select id="sort"><option value="relevance">Search relevance</option><option value="sample">Original sample order</option></select></label>
+    <label class="wide check" for="suggested"><input id="suggested" type="checkbox" checked> Include suggested skills in search and skill filtering</label>
+    <div class="wide"><button id="clear" type="button">Clear all filters</button></div>
+  </section>
+  <p id="count" role="status" aria-live="polite">Loading the sample…</p>
+  <p id="empty" hidden>No matching issues in this 20-issue sample. Try fewer words or clear a filter.</p>
+  <section id="results" aria-label="Search results"></section>
+  <nav aria-label="Result pages"><button id="previous" type="button">Previous</button><span id="page"></span><button id="next" type="button">Next</button></nav>
+</main><script type="module" src="trial-ui.js"></script></body></html>
