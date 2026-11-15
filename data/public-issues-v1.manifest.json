@@ -1,12 +1,12 @@
 {
   "schema_version": 1,
-  "created_at": "2026-10-29T02:45:09.107520+00:00",
-  "payload_sha256": "b998cce7b3628e89417cd02c718e84976c59cd1c20be7855e32f2de764d517a7",
-  "gzip_sha256": "cbcdcdb51ab5cd325caa94acb44e0cf0d6aa1f4771975a2b5fd0eae2c415c243",
-  "compressed_bytes": 9772392,
-  "extraction_version": "minimal-requirements-v2-production-v1",
+  "created_at": "2026-11-15T14:56:15.239571+00:00",
+  "payload_sha256": "24f503021d2aca140526c0e7e253338537343eabee1793bdeebb44a21281c80c",
+  "gzip_sha256": "36e16eaa472fb5ed14ad20108ef86f4675a9abbfe6646331ca45b6cac31efc1e",
+  "compressed_bytes": 10581773,
+  "extraction_version": "issue-interpretation-v3-production-v1",
   "model": "deepseek/deepseek-v3.2",
-  "prompt_version": "minimal-requirements-v2",
+  "prompt_version": "issue-interpretation-v3",
   "sources": [
     {
       "path": "hackforla/website",
@@ -30,13 +30,13 @@
       "path": "openfoodfacts/openfoodfacts-server",
       "issues": 4384,
       "open_issues": 1623,
-      "cached_enrichments": 569
+      "cached_enrichments": 1623
     },
     {
       "path": "openstreetmap/iD",
       "issues": 8091,
       "open_issues": 836,
-      "cached_enrichments": 571
+      "cached_enrichments": 836
     }
   ]
 }

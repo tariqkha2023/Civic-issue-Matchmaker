@@ -23,7 +23,7 @@
 | FR-10 | Revised: GitHub open/closed and assignment remain separate from local tracking. Missing/inaccessible records are not assumed closed. |
 | FR-11 | Staged pages do not replace a published snapshot until complete; failure retains cache and progress. |
 | FR-12–FR-13 | Scoped metadata corrections, rationale, source-change review flag, override reset and audited before/after. |
-| FR-14–FR-19 | Explainable weighted matching, ordering, filters and metadata coverage. Missing issue-specific skills produces Limited information rather than a fabricated percentage. Evidence-v4 weights and AI provenance are documented in the scope and README. |
+| FR-14–FR-19 | Explainable weighted matching, ordering, filters and metadata coverage. Missing issue-specific skills produces Limited information rather than a fabricated percentage. Skills/interests-v5 weights and suggestion provenance are documented in the revised scope and README. |
 | FR-20 | Closed issues excluded by default. Exclusion based on another user's local claim is N/A; upstream assignment is shown/filterable. |
 | FR-21 | Revised to Interested/In progress/Submitted/Completed/Withdrawn personal activity. Saved bookmarks remain separate. |
 | FR-22 | N/A for external issues: several contributors can track one issue; there is no local reservation of GitHub work. |
@@ -77,3 +77,21 @@ These are verification work, not automatic N/A exclusions. Do not present the pr
 The existing SQLite database was consistently backed up before migration. All four existing accounts and 19 published legacy issues were preserved. A real read-only HOT Tasking Manager request successfully staged its first tracker page, and the worker subsequently advanced multiple pages for all five configured sources. Repository-ID pagination was verified live and added to regression coverage. These are connectivity/staging checks, not evidence that all five trackers completed indexing. The worker continues resumable scans subject to GitHub quotas.
 
 The committed dependency baseline was also installed and built in a clean temporary export. Vite is pinned to 6.4.5; that clean install reported zero npm audit vulnerabilities. Private-source rejection and safe repository-rename redirects have additional regression coverage.
+
+## Integrated discovery release — November 15, 2026
+
+The active local implementation includes grounded AI overviews, broader explained
+search, saved context/skill research for 20 unchanged postings, suggestion controls,
+and profile-based matching. The public bundle now includes current cached results
+for every one of the 3,539 open issues (2,389 accepted; 1,150 rejected and retained
+as source-only). No paid inference is required for teammate setup. Internal review
+limitations are separated from actionable task questions. The original verification
+record above is historical; current checks and remaining acceptance work are recorded
+in the implementation review. Formal human usability and AI accuracy acceptance
+cannot be inferred from functional tests.
+
+Current local checks: 94 backend tests, 45 browser checks across three engines and
+three Chromium widths, automated accessibility scans, public-only offline restore
+and a 500-active-identity/32-parallel-read probe passed. These narrow measurements
+do not replace the outstanding sustained-load, scale and human acceptance work.
+See the November 15 record in [implementation review](IMPLEMENTATION_REVIEW.md).

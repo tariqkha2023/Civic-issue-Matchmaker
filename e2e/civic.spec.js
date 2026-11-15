@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './fixtures.js';
 const password='fixture demo password';
 async function login(page,email){await page.goto('/#/login');await page.getByLabel('Email',{exact:true}).fill(email);await page.getByLabel('Password',{exact:true}).fill(password);await page.getByRole('button',{name:'Login',exact:true}).last().click();await expect(page.getByRole('heading',{name:'Discover civic-tech issues'})).toBeVisible();}
 async function overflow(page,width){expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(width);}
@@ -27,7 +27,7 @@ test('Discover preserves filters and pagination while distinguishing unknown met
  await expect.poll(()=>Object.fromEntries(requests.at(-1))).toMatchObject({page:'1',topic:'Humanitarian mapping',skill:'python',repository:'hotosm/tasking-manager',status:'closed',assignment:'unassigned'});
  await expect(page.getByText('Not enough information to score',{exact:true})).toBeVisible();
  await page.getByRole('button',{name:'Clear all',exact:true}).click();
- await expect.poll(()=>Object.fromEntries(requests.at(-1))).toEqual({page:'1',status:'open',sort:'compatibility'});
+ await expect.poll(()=>Object.fromEntries(requests.at(-1))).toEqual({page:'1',status:'open',sort:'compatibility',include_suggested:'true'});
  await expect(page.getByText('Not enough information to score',{exact:true})).toBeVisible();
  await overflow(page,info.project.use.viewport.width);
  await page.screenshot({path:info.outputPath('discover.png'),fullPage:true});
@@ -52,7 +52,7 @@ test('contributor discovers source issues, tracks work, rates relevance and expo
  await page.getByText('Match details and source metadata',{exact:true}).click();
  await expect(page.getByRole('heading',{name:'AI-extracted requirements'})).toBeVisible();
  await expect(page.locator('q').filter({hasText:'Python'})).toBeVisible();
- await expect(page.getByText('testing · AI inferred',{exact:true})).toBeVisible();
+ await expect(page.getByText('testing · inferred',{exact:true})).toBeVisible();
  await expect(page.getByRole('link',{name:'Open on GitHub'})).toHaveAttribute('href','https://github.com/hotosm/tasking-manager/issues/1');
  if(await page.getByRole('button',{name:'Unsave issue',exact:true}).count())await page.getByRole('button',{name:'Unsave issue',exact:true}).click();
  await page.getByRole('button',{name:'Save issue',exact:true}).click();

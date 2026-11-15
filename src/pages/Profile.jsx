@@ -27,13 +27,13 @@ export default function Profile({ user, onSaved, onError }) {
     } catch (e) { setError(e.message); if (e.status === 401) onError(e); }
     finally { setBusy(false); }
   };
-  return <><section className="pageHead"><div><span className="eyebrow">YOUR MATCHING PREFERENCES</span><h1>Contributor profile</h1><p>Tell us what you know, what interests you, and how much time you have.</p></div></section>
+  return <><section className="pageHead"><div><span className="eyebrow">YOUR MATCHING PREFERENCES</span><h1>Contributor profile</h1><p>Add your technical skills and civic interests to personalize your matches.</p></div></section>
     <section className="pageBody"><form className="panel form" noValidate onSubmit={save}>
       <div className="profileGrid">
       {[['name', 'Display name'], ['skills', 'Skills (comma separated)'], ['interests', 'Interests / civic topics (comma separated)'], ['repositories', 'Preferred repositories (owner/repo, comma separated)']].map(([key, label]) => <label key={key}>{label}<input value={form[key]} onChange={e => update(key, e.target.value)} aria-invalid={!!errors[key]} placeholder={key === 'skills' ? 'Python, JavaScript, Documentation' : key === 'interests' ? 'Open mapping, Humanitarian mapping, Public infrastructure' : ''}/>{errors[key] && <span className="fieldError">{errors[key]}</span>}</label>)}
       {[['level', 'Experience level'], ['difficulty', 'Preferred difficulty']].map(([key, label]) => <label key={key}>{label}<select value={form[key]} onChange={e => update(key, e.target.value)}>{levels.map(level => <option key={level}>{level}</option>)}</select></label>)}
       <label>Weekly availability (hours)<input type="number" min="0" max="168" step="0.5" value={form.hours} onChange={e => update('hours', e.target.value)} aria-invalid={!!errors.hours}/>{errors.hours && <span className="fieldError">{errors.hours}</span>}</label>
-      <label>GitHub username (self-reported, not verified)<input maxLength={39} value={form.github_username} onChange={e=>update('github_username',e.target.value)}/></label></div><p className="muted">Profile information is private to your account. Fields without task metadata do not affect compatibility scores.</p>
+      <label>GitHub username (self-reported, not verified)<input maxLength={39} value={form.github_username} onChange={e=>update('github_username',e.target.value)}/></label></div><p className="muted">Your profile is private. Match scores use technical skills and civic interests. Experience, preferred difficulty and weekly availability are optional information and do not affect scores.</p>
       {error && <p className="msg error" role="alert">{error}</p>}{message && <p className="msg success" role="status">{message}</p>}
       <button className="btn primary" disabled={busy}>{busy ? 'Saving…' : 'Save profile'}</button>
     </form></section></>;

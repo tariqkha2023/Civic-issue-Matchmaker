@@ -45,3 +45,13 @@ The default path is resolved relative to this repository, independent of the
 working directory. An explicit `.json.gz` path may follow `export`, `import` or
 `setup`. Review the manifest and public-only diff before committing an updated
 bundle. Unprocessed issues remain unprocessed; setup never launches enrichment.
+
+## Current release coverage
+
+The November 15, 2026 bundle includes 21,558 public issues, with current v3 cached
+results for all 3,539 open issues. Of those, 2,389 were accepted and 1,150 were
+rejected by validation. Rejected outputs remain source-only; importing them avoids
+retrying paid processing. A processed record is not a claim of accurate extraction
+or a confirmed skill requirement. The separate `discovery-reviews.json` bundle
+contains 20 saved public-context reviews; source-text hashes prevent applying them
+to changed postings. Internal review notes are not contributor task requirements.

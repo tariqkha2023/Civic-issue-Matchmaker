@@ -1,0 +1,513 @@
+{
+  "provenance": "Saved context and skill research from the November 13, 2026 discovery trial. Not live verification.",
+  "issues": [
+    {
+      "url": "https://github.com/openstreetmap/iD/issues/8688",
+      "summary": "Let custom background maps specify the size of their image tiles.",
+      "purpose": "The author wants iD to support more WMTS imagery sources. They report a service that would not open in iD 2.20.1.",
+      "work": "The request is for a configurable tile-size parameter. The saved issue describes a 256-pixel default and mentions 512 × 512 imagery; it does not prescribe a complete implementation.",
+      "background": "OpenStreetMap is a shared map that contributors can edit. iD is the browser-based tool they use to add or correct mapped objects, such as roads and buildings. Background imagery gives them a visual reference while editing. Online imagery often arrives as many small square pictures called tiles, which the editor assembles into a larger view. WMTS, short for Web Map Tile Service, is a standard for requesting those pictures. Tile size is the width and height of each picture in pixels. The issue asks for a setting that lets an imagery source specify that size. ELI, the Editor Layer Index, is the catalogue of imagery sources mentioned by the author.",
+      "uncertainty": "The parameter format, accepted tile sizes and current bug status need confirmation.",
+      "sources": [
+        "https://www.ogc.org/standards/wmts/",
+        "https://github.com/osmlab/editor-layer-index"
+      ],
+      "project": "A browser editor for contributing to OpenStreetMap.",
+      "project_url": "https://github.com/openstreetmap/iD",
+      "source_hash": "29b4d331227472f5bdf04e4e067ad4ff17cae5aa48e5f21de8d6158d50cb7716",
+      "skills": [
+        {
+          "name": "Web mapping",
+          "reason": "The request changes how background map imagery is configured.",
+          "quote": "add a parameter for custom backgrounds to define the tileSize"
+        },
+        {
+          "name": "Configuration handling",
+          "reason": "The requested feature exposes a configurable tile size.",
+          "quote": "add a parameter for custom backgrounds to define the tileSize"
+        }
+      ],
+      "review_notes": "The historical code links could not be retrieved in this review. The reported default is attributed to the issue author, not verified against today’s code. The parameter format, accepted sizes and current bug status still need checking."
+    },
+    {
+      "url": "https://github.com/hotosm/tasking-manager/issues/4865",
+      "summary": "Show what volunteers need to map before they open a mapping project.",
+      "purpose": "The author wants people browsing projects to see whether a project needs buildings, roads or other features mapped.",
+      "work": "Add that information to the Explore project listing. A tooltip is suggested because space is limited; the interaction is not fully specified.",
+      "background": "Tasking Manager helps groups of volunteers contribute to OpenStreetMap without all working on the same area at once. An organizer creates a mapping project for a geographic area and explains what should be mapped. Volunteers browse those projects, choose one and work on a smaller section. Here, features means real-world objects such as roads or buildings that volunteers should draw or update on the map. The author wants those requirements visible while browsing. A tooltip is a small explanatory box revealed by interacting with an item; the posting suggests one to fit this information into a crowded listing.",
+      "uncertainty": "The source of the feature information and an accessible way to reveal it need agreement. The suggested tooltip does not require hover-only behavior.",
+      "sources": [
+        "https://learnosm.org/en/coordination/tasking-manager/"
+      ],
+      "project": "Coordinates volunteers mapping areas together in OpenStreetMap.",
+      "project_url": "https://github.com/hotosm/tasking-manager",
+      "source_hash": "76242e791ccfe845daa5d458ee9346de19ec888c902a1289511e6ba9151ec7e3",
+      "skills": [
+        {
+          "name": "Frontend development",
+          "reason": "The proposed tooltip changes the project listing interface.",
+          "quote": "best be placed in a tooltip"
+        },
+        {
+          "name": "Interaction design",
+          "reason": "The request requires presenting additional information in limited space.",
+          "quote": "Since the space is limited"
+        }
+      ],
+      "review_notes": "The source of this information and an accessible way to reveal it still need agreement. The issue suggests a tooltip; it does not require hover-only behavior."
+    },
+    {
+      "url": "https://github.com/mysociety/fixmystreet/issues/3581",
+      "summary": "Accept a correct sign-in verification code even when it contains a space.",
+      "purpose": "People may copy or type a code as two groups of three digits. The report says the form accepts the space while typing, then rejects submission.",
+      "work": "Remove or disregard spaces during input or submission, as requested. The saved issue includes reproduction instructions using a staff account with two-factor authentication.",
+      "background": "FixMyStreet helps residents report local problems and provides accounts for staff working with the service. A staff account can use two-factor authentication: after entering login details, the person must also enter a verification code, for example from an authentication app on their phone. Such an app may display a six-digit code in two groups, like 123 456. The reported form lets someone type that space, but its input check then rejects the entry because it expects only digits. The request is to handle the space while continuing to check the verification code normally.",
+      "uncertainty": "Confirm when spaces should be removed and how other characters should be handled.",
+      "sources": [],
+      "project": "Helps residents report local problems to the responsible authority.",
+      "project_url": "https://fixmystreet.org/overview/",
+      "source_hash": "25051d4a622b7369bc03e1c322b87ec65975cb16610680ac6a18f552b3193aa1",
+      "skills": [
+        {
+          "name": "Frontend development",
+          "reason": "The requested behavior concerns the sign-in form’s code input.",
+          "quote": "The form should be updated to auto-delete or disregard spaces"
+        },
+        {
+          "name": "Input validation",
+          "reason": "The form rejects codes containing spaces even though they can be entered.",
+          "quote": "local form validation prevents submission of non-numeric characters"
+        }
+      ],
+      "review_notes": "The author leaves the timing of space removal open. Handling of other characters and current browser behavior still need verification."
+    },
+    {
+      "url": "https://github.com/openfoodfacts/openfoodfacts-server/issues/5696",
+      "summary": "Compare the ingredient makeup of groups of food products.",
+      "purpose": "Researchers, consumers and producers could compare products, including estimating typical recipes for environmental-impact research.",
+      "work": "The author proposes estimating ingredient percentages, grouping ingredients into broader categories such as fruit, calculating statistics, then exposing results through scripts and eventually a web interface.",
+      "background": "Open Food Facts stores ingredient lists and nutrition information from food packaging. Nutrition information describes properties such as sugar or fat content; an ingredient list describes what a food is made from. This proposal concerns comparing ingredients across a group of products, such as different pizzas. A parent ingredient is a broader grouping: apple would count toward fruit. The proposed software would estimate how much of each grouping a product contains, then calculate averages and show how products differ. Those estimates could support comparisons and research, but they would not be measured or manufacturer-confirmed recipes unless the source data established that.",
+      "uncertainty": "Define the initial deliverable, accuracy expectations and handling of missing ingredient quantities.",
+      "sources": [],
+      "project": "An open database of food products, ingredients and nutrition information.",
+      "project_url": "https://github.com/openfoodfacts/openfoodfacts-server",
+      "source_hash": "a29541d444f777ad170b9a52e272bf8070c188c369c8cac08fca980e1c184912",
+      "skills": [
+        {
+          "name": "Data processing",
+          "reason": "The proposal groups ingredients and computes their distribution across products.",
+          "quote": "each ingredient is matched against the specified list of parents ingredients"
+        },
+        {
+          "name": "Statistical analysis",
+          "reason": "The proposal explicitly mentions summary statistics.",
+          "quote": "basic stats (mean, variance etc.)"
+        },
+        {
+          "name": "Data visualization",
+          "reason": "The proposal includes graphs of ingredient distributions.",
+          "quote": "distribution graphs"
+        }
+      ],
+      "review_notes": "The initial deliverable, accuracy expectations and handling of missing ingredient quantities need definition. The proposal names Ingredients.pm, but its implementation was not inspected."
+    },
+    {
+      "url": "https://github.com/hackforla/website/issues/2228",
+      "summary": "Test whether team documentation can update itself from existing project data.",
+      "purpose": "The author says outdated guidance makes it harder for new team members to get started.",
+      "work": "Assess automated edits to repository files and wiki pages; identify permissions; demonstrate reading meeting times from the stated VRMS API into a wiki table. Some feasibility steps are already checked in the saved issue.",
+      "background": "The Hack for LA website team maintains instructions for people who contribute to its website. Some instructions live in a wiki, a collection of documentation pages, while others are files stored alongside the website’s code in a repository. Information such as meeting times can become outdated when someone must update it by hand. The proposed demonstration would read meeting times from the team’s named VRMS API, an interface through which a program can request information, and put them into a table in the wiki. An API token is a credential that gives software permission to access a service. This task asks which permissions and tools would be needed, rather than assuming that automatic editing is already approved or working.",
+      "uncertainty": "Confirm prerequisites #3636 and #2676, required API permissions, and approval to edit shared documentation.",
+      "sources": [
+        "https://docs.github.com/en/communities/documenting-your-project-with-wikis/about-wikis"
+      ],
+      "project": "The organization’s website connects with volunteers, stakeholders and donors.",
+      "project_url": "https://www.hackforla.org/projects/website",
+      "source_hash": "9656cc3943b8565a58ee2286d248158a904bbca78d9cf459d4e195a64f2eca9b",
+      "skills": [
+        {
+          "name": "API integration",
+          "reason": "The demonstration reads meeting times from an API.",
+          "quote": "parse and read meetings times from our [vrms api]"
+        },
+        {
+          "name": "Scripting",
+          "reason": "The feasibility study asks whether a program can edit documentation automatically.",
+          "quote": "Assess whether a program can"
+        },
+        {
+          "name": "Documentation automation",
+          "reason": "The proposed program updates wiki and contributing documentation.",
+          "quote": "automatic updates on the wiki and our contributing documentation"
+        }
+      ],
+      "review_notes": "Dependencies #3636 and #2676 were not resolved in this review. The demo’s current status, required permissions and approval to edit shared documentation need confirmation."
+    },
+    {
+      "url": "https://github.com/openstreetmap/iD/issues/8695",
+      "summary": "Tell a mapper when a selected point belongs to a larger map feature.",
+      "purpose": "The author describes accidentally deleting the end of a drainpipe because it looked like an unrelated point.",
+      "work": "Add an indication beside the feature type showing that the selected point is part of something else. The wording and interaction are not specified.",
+      "background": "People contributing to OpenStreetMap use iD to select and change objects on a map. A point, called a node, can represent something on its own, such as a bench, or form part of a line representing a road or drain. The editor calls such a line a way. In the author’s example, a point that looked unimportant was actually the end of a drainpipe. Removing it therefore changed the mapped drain. Showing what a selected point belongs to would give the person editing it more context before they change or delete it.",
+      "uncertainty": "Confirm the intended message and how to display points that belong to several map features.",
+      "sources": [
+        "https://wiki.openstreetmap.org/wiki/Elements"
+      ],
+      "project": "A browser editor for contributing to OpenStreetMap.",
+      "project_url": "https://github.com/openstreetmap/iD",
+      "source_hash": "4502b682a7c8084c3af2a4053e9f80cf72c977e6c9172809b666623f9bb4f3e7",
+      "skills": [
+        {
+          "name": "Frontend development",
+          "reason": "The request adds information to the editor’s feature display.",
+          "quote": "when showing \"point\" there on the left under Feature Type, please also mention that it is a part of something"
+        },
+        {
+          "name": "UX writing",
+          "reason": "The display needs to communicate that the selected point belongs to another object.",
+          "quote": "please also mention that it is a part of something"
+        }
+      ],
+      "review_notes": "The intended message, treatment of points belonging to several features, and current behavior need confirmation. This review did not inspect the attached screenshot."
+    },
+    {
+      "url": "https://github.com/hotosm/tasking-manager/issues/4870",
+      "summary": "Give new mapping projects a default deadline 30 days after creation.",
+      "purpose": "The author says deadlines are often left empty and wants to encourage completion within 30 days.",
+      "work": "Set the initial due date relative to the project creation date. The issue does not request changing existing projects.",
+      "background": "A Tasking Manager project is an organized effort to map a particular geographic area in OpenStreetMap. The area is divided into smaller sections so multiple volunteers can contribute, and other volunteers can check the completed mapping. The project’s due date records when that overall mapping effort is intended to finish. A default is a value the software fills in automatically, rather than leaving a field empty. This posting proposes filling in a date 30 days after project creation. That is a scheduling target for the mapping project, not an estimate of how many hours an individual volunteer will work.",
+      "uncertainty": "Confirm whether the default can be overridden, which timezone applies, and how existing records should be handled.",
+      "sources": [
+        "https://learnosm.org/en/coordination/tasking-manager/"
+      ],
+      "project": "Coordinates volunteers mapping areas together in OpenStreetMap.",
+      "project_url": "https://github.com/hotosm/tasking-manager",
+      "source_hash": "a81d80e99a03fe82514163ab80a0b4a8a69c6136e440ad372b284924af446ba0",
+      "skills": [
+        {
+          "name": "Date handling",
+          "reason": "The default date must be calculated relative to project creation.",
+          "quote": "setting a default of 30 days from creation"
+        }
+      ],
+      "review_notes": "Whether the default can be overridden, the timezone rule and handling of existing records are not specified."
+    },
+    {
+      "url": "https://github.com/mysociety/fixmystreet/issues/1174",
+      "summary": "Add a monitoring page that flags problems with sending residents’ reports.",
+      "purpose": "Interpretation: operators could detect reports that have not reached the responsible authority.",
+      "work": "The author proposes checks for reports unsent after a specified number of hours and unconfirmed council contact email addresses where delivery uses email.",
+      "background": "FixMyStreet lets residents report local problems such as potholes or broken streetlights. A report contains the resident’s description and the location of the problem. The service uses that location and the type of problem to route the report to the council or other authority responsible for dealing with it. It can send the information by email or through a web service, meaning a connection that lets two computer systems exchange information automatically. A health check is a software check that shows whether a process is working. Here, the proposed check would flag reports still waiting to be sent and council contact email addresses that have not been confirmed.",
+      "uncertainty": "Define the number of hours before a report is considered unsent, what counts as a failed check, who can access the page, and the page format.",
+      "sources": [
+        "https://fixmystreet.org/how-it-works/"
+      ],
+      "project": "Helps residents report local problems to the responsible authority.",
+      "project_url": "https://fixmystreet.org/overview/",
+      "source_hash": "fe74f2f1aa2cd517601e67c32fcbc2d911c43610a094603c93f11b241028153c",
+      "skills": [
+        {
+          "name": "Monitoring",
+          "reason": "The proposed page checks report-delivery conditions.",
+          "quote": "Any reports unsent after N hours"
+        },
+        {
+          "name": "Backend development",
+          "reason": "Checking unsent reports and council contact records likely involves application data processing; the implementation is not specified.",
+          "quote": "Unconfirmed email addresses in the contacts for councils"
+        }
+      ],
+      "review_notes": "The number of hours is only written as N. The meaning of a failed check, access permissions and page format are unspecified; the author presents the conditions tentatively."
+    },
+    {
+      "url": "https://github.com/openfoodfacts/openfoodfacts-server/issues/155",
+      "summary": "Let people find or list food products by their recorded weight.",
+      "purpose": "The author gives examples of finding products recorded as 0 g or locating a large bottle of wine.",
+      "work": "Add a way to search or list by weight. The linked parent issue is a broader search tracker, which establishes the context but not a detailed design.",
+      "background": "Open Food Facts stores information about packaged foods, including the amount of product recorded from a label. Someone searching the database might want to find products with a particular recorded weight or compare package sizes. Filtering would narrow the results to products meeting a condition; sorting would arrange them from smallest to largest, for example. The author mentions finding entries recorded as 0 grams and finding a large bottle of wine. Because bottles may be measured by volume rather than weight, those examples leave an important question about which quantity the feature should use. The linked parent posting groups broader search improvements.",
+      "uncertainty": "Clarify whether the feature filters or sorts products, which weight or volume field it uses, and how units should be handled.",
+      "sources": [
+        "https://github.com/openfoodfacts/openfoodfacts-server/issues/5492"
+      ],
+      "project": "An open database of food products, ingredients and nutrition information.",
+      "project_url": "https://github.com/openfoodfacts/openfoodfacts-server",
+      "source_hash": "a8a7edbaba21a0c1af59c0e26c72d3237f2be8c58eab9a091e4703eb019a7930",
+      "skills": [
+        {
+          "name": "Search development",
+          "reason": "The requested capability finds or lists products by weight.",
+          "quote": "Being able to search or list by weight"
+        }
+      ],
+      "review_notes": "Filtering versus sorting, weight versus volume, and unit handling need clarification. The wine example makes the intended quantity field particularly important to confirm."
+    },
+    {
+      "url": "https://github.com/hackforla/website/issues/2266",
+      "summary": "Document how changes move between the team’s website versions.",
+      "purpose": "Future maintainers need instructions for operating the development and production setup.",
+      "work": "Most writing and discussion steps are already checked. Remaining items ask about contributor credit, unaccepted changes, selective synchronization, and approval from a technical lead or merge-team member.",
+      "background": "The Hack for LA website team wants written instructions explaining how changes move from a working version of its site to the version public visitors see. The files for those versions are kept in repositories, which also record who changed them. Synchronization means copying or applying selected changes between those repositories. The remaining research questions include how to preserve volunteers’ credit for their work and how to avoid carrying over changes that have not been accepted. A wiki is a collection of documentation pages where maintainers can read the agreed process. The issue asks for that process to be documented and reviewed by the team responsible for approving changes.",
+      "uncertainty": "Confirm which checklist items remain open and agree on the development-environment setup.",
+      "sources": [
+        "https://docs.github.com/en/communities/documenting-your-project-with-wikis/about-wikis"
+      ],
+      "project": "The organization’s website connects with volunteers, stakeholders and donors.",
+      "project_url": "https://www.hackforla.org/projects/website",
+      "source_hash": "f1700e1943ad9bcd360a7b82a41087e68f28e344435e1c4461248c99ec70d620",
+      "skills": [
+        {
+          "name": "Technical writing",
+          "reason": "The requested documentation explains programs and steps for propagating website changes.",
+          "quote": "Write documentation that reflects the above mentioned process"
+        },
+        {
+          "name": "Version control",
+          "reason": "Remaining research concerns preserving contributor credit and selecting which changes to synchronize.",
+          "quote": "Is it possible to only sync certain files/features?"
+        }
+      ],
+      "review_notes": "The linked environment wiki and feasibility issue could not be retrieved. The saved checklist should not be treated as today’s task status; confirm what still needs work."
+    },
+    {
+      "url": "https://github.com/openstreetmap/iD/issues/2746",
+      "summary": "Help mappers edit features on different building floors without changing the wrong floor.",
+      "purpose": "Doors and elevator paths can occupy the same horizontal position on several floors. The reporter says changing one floor’s information also changes others.",
+      "work": "The author asks for a method to edit these overlapping features separately. They describe unsuccessful attempts to separate points; they do not establish a particular code fix.",
+      "background": "OpenStreetMap contributors can describe features inside buildings, including doors and paths on different floors. A flat, top-down map can show objects on several floors in the same place: think of elevator doors directly above one another. The map stores locations as points, or nodes, and connects points to represent paths. Tags are descriptive labels attached to those objects; a level tag records which floor an object belongs to. The author is trying to change the floor information for one object without changing the overlapping objects on other floors.",
+      "uncertainty": "Provide a reproducible example to establish whether this is a selection problem, shared map data, an editing workflow question or a software defect.",
+      "sources": [
+        "https://wiki.openstreetmap.org/wiki/Elements"
+      ],
+      "project": "A browser editor for contributing to OpenStreetMap.",
+      "project_url": "https://github.com/openstreetmap/iD",
+      "source_hash": "6c5bce6970998b15d19177d4b2ca5387fddaa20e4edd47e6d0666bf97defb5c3",
+      "skills": [
+        {
+          "name": "Web mapping",
+          "reason": "The request concerns editing overlapping map objects on different floors.",
+          "quote": "allow stacked node tag changes"
+        },
+        {
+          "name": "Troubleshooting",
+          "reason": "The reporter describes changes affecting several floors unexpectedly.",
+          "quote": "the editor kept updateing all version of the nodes for all levels"
+        }
+      ],
+      "review_notes": "It is unresolved whether this is a selection problem, shared map data, an editing workflow question or a software defect. A reproducible example is needed."
+    },
+    {
+      "url": "https://github.com/hotosm/tasking-manager/issues/4873",
+      "summary": "Make error messages explain what went wrong and what the user can do next.",
+      "purpose": "The author reports that vague error dialogs generate support requests that are difficult to resolve.",
+      "work": "Improve the messages so they provide useful error information and guide users back to their previous action or another appropriate action.",
+      "background": "Volunteers use Tasking Manager to find an area that needs mapping, select a section and record their progress as they contribute to OpenStreetMap. When something fails, the software may show a modal: a message box that appears over the page and asks for attention. If it only says that an error occurred, the volunteer may not know whether to retry, return to the previous step or ask for help. Support requests are the messages people send to the team for assistance. This posting asks for error messages that explain enough for users to understand their next step, but does not identify which particular failures to address.",
+      "uncertainty": "Identify the affected errors, example messages and code paths before choosing the improvement scope.",
+      "sources": [
+        "https://learnosm.org/en/coordination/tasking-manager/"
+      ],
+      "project": "Coordinates volunteers mapping areas together in OpenStreetMap.",
+      "project_url": "https://github.com/hotosm/tasking-manager",
+      "source_hash": "e8002bdfb8c4af914adff7c50ec9fc28572136aa878de759dc23eb820db1bbf3",
+      "skills": [
+        {
+          "name": "UX writing",
+          "reason": "The request asks for informative, actionable error messages.",
+          "quote": "providing additional information of the error and guiding the user"
+        },
+        {
+          "name": "Error handling",
+          "reason": "The change concerns what the application communicates after an error.",
+          "quote": "general error message modals"
+        }
+      ],
+      "review_notes": "No particular error, screenshot, message text or affected code path is supplied. This is a broad improvement request that needs concrete examples."
+    },
+    {
+      "url": "https://github.com/mysociety/fixmystreet/issues/1171",
+      "summary": "Show cycling and other paths clearly enough to place a report at the right location.",
+      "purpose": "The author wants to position a map pin more accurately on cycle routes, greenways and bridleways.",
+      "work": "Improve the visibility of those routes at a useful zoom level. The issue does not choose a map provider or rendering approach.",
+      "background": "FixMyStreet lets residents tell the responsible local authority about problems such as potholes or broken streetlights. A report is the resident’s description of the problem together with where it is located. The resident marks that location using a pin on a map, and the service uses the location and problem category to decide where to send it. If a bicycle route or other path is difficult to see, someone reporting a problem along it may struggle to place the pin accurately. This request concerns showing those paths clearly enough to identify the location.",
+      "uncertainty": "Confirm the affected map style, available route data and desired zoom levels.",
+      "sources": [
+        "https://fixmystreet.org/how-it-works/"
+      ],
+      "project": "Helps residents report local problems to the responsible authority.",
+      "project_url": "https://fixmystreet.org/overview/",
+      "source_hash": "d02b14e345cfb8be2149085105d1111d37acb3dcdc9fc889ebf5b9555df4e4a8",
+      "skills": [
+        {
+          "name": "Web mapping",
+          "reason": "The request concerns displaying routes at a useful map zoom level.",
+          "quote": "at a sufficient level of zoom to place a pin"
+        }
+      ],
+      "review_notes": "The affected map style, available route data and desired zoom levels are not given. The public purpose is understandable, but implementation scope is still open."
+    },
+    {
+      "url": "https://github.com/openfoodfacts/openfoodfacts-server/issues/5689",
+      "summary": "Coordinate improvements for US food labels and measurement units.",
+      "purpose": "The author wants US users and applications to enter and read nutrition information in familiar formats.",
+      "work": "The unchecked items cover reading and submitting quantities and portions in metric or imperial units, plus nutrition input and display matching the US label layout.",
+      "background": "Open Food Facts collects information from food packaging so people and other applications can look up ingredients, quantities and nutrition information. Different countries present that information differently. A US nutrition label, for example, has a particular layout, and product amounts may be expressed using different measurement units. This posting groups several proposed changes: accepting and returning quantities in metric or imperial units, and providing nutrition entry and display layouts suited to US labels. A tracker is a checklist that coordinates multiple related changes. A contributor would need to select a particular item rather than treat the entire list as one small assignment.",
+      "uncertainty": "Choose a concrete subtask and agree on its expected output and acceptance criteria.",
+      "sources": [],
+      "project": "An open database of food products, ingredients and nutrition information.",
+      "project_url": "https://github.com/openfoodfacts/openfoodfacts-server",
+      "source_hash": "b747f036fd34618ea159d07a7e9a2ecb787011e04b1bd752ce9854ddf4e71131",
+      "skills": [
+        {
+          "name": "Data processing",
+          "reason": "Several tracker items concern reading and submitting quantities in different units.",
+          "quote": "retrieving quantity in either metric or imperial units"
+        },
+        {
+          "name": "Frontend development",
+          "reason": "Other tracker items request nutrition input and display layouts; this applies to those subtasks only.",
+          "quote": "Create a nutrition input that has exactly the same layout"
+        }
+      ],
+      "review_notes": "A contributor needs to choose a subtask. The linked country-support wiki denied access during review; no regulatory compliance or finished design was verified."
+    },
+    {
+      "url": "https://github.com/hackforla/website/issues/2264",
+      "summary": "Arrange repositories, domain names and team access for separate website versions.",
+      "purpose": "The issue describes separating a development website from the public production website so the team can review changes.",
+      "work": "Provide the development domain; create the named production repository; record the domains; add team members; coordinate the dependent setup issue.",
+      "background": "The Hack for LA website team wants separate versions of its site so changes can be worked on and reviewed before reaching the public. A development environment is the version used while building changes; production is the version intended for visitors. A repository stores a version of the website’s files and their change history. A domain name is the address people use to reach a hosted website. This phase asks someone to arrange the repositories, addresses and team access needed by the later setup work. It therefore involves control of shared project resources as well as understanding how the website is organized.",
+      "uncertainty": "Confirm prerequisite #2266, the approved environment plan, and which project administrator can authorize the changes.",
+      "sources": [],
+      "project": "The organization’s website connects with volunteers, stakeholders and donors.",
+      "project_url": "https://www.hackforla.org/projects/website",
+      "source_hash": "b3de0b883443f58295963ae3d819f4a733824824d8de2d468a40c9f05cb4ea1d",
+      "skills": [
+        {
+          "name": "Repository administration",
+          "reason": "The checklist requests creating a repository and granting team access.",
+          "quote": "Add relevant team members to the website-prod repository"
+        },
+        {
+          "name": "Domain configuration",
+          "reason": "The checklist asks for a domain for the development website.",
+          "quote": "Provide a domain name"
+        }
+      ],
+      "review_notes": "The issue depends on #2266. The environment names differ across the related phases; confirm the approved plan and authorized administrator before taking action."
+    },
+    {
+      "url": "https://github.com/openstreetmap/iD/issues/8684",
+      "summary": "Investigate a warning icon that remains stuck in the editor’s side menu.",
+      "purpose": "The report describes a white icon remaining on screen after the mapper interacts with a cycleway. Reloading clears it.",
+      "work": "The reported symptom is a stuck icon after inspecting a map warning and clicking a feature. Reproducing that sequence would be an investigation step, not an already-proven fix.",
+      "background": "Volunteers use iD to edit the roads, paths and other objects recorded in OpenStreetMap. Osmose is a separate checking tool that looks for possible problems in that map data and provides warnings for contributors to investigate. A tag is a descriptive label on a mapped object; a warning about a redundant tag suggests that some descriptive information may be unnecessary. In this posting, the author describes a warning symbol remaining in the editor’s side menu after clicking a bicycle path on the map. The problem being reported is the symbol staying on screen; its underlying cause is still unknown.",
+      "uncertainty": "Find reliable reproduction steps and identify the affected editor component.",
+      "sources": [
+        "https://wiki.openstreetmap.org/wiki/Osmose"
+      ],
+      "project": "A browser editor for contributing to OpenStreetMap.",
+      "project_url": "https://github.com/openstreetmap/iD",
+      "source_hash": "9b4413528e6e62738617dc5808cfcdcff0da946152713ff2ad17076265a80077",
+      "skills": [
+        {
+          "name": "Frontend development",
+          "reason": "The symptom is an icon remaining in the editor menu.",
+          "quote": "stuck on the left menu"
+        },
+        {
+          "name": "Troubleshooting",
+          "reason": "The reporter cannot reliably repeat the problem, so investigation is needed.",
+          "quote": "I have been unable to reproduce this myself."
+        }
+      ],
+      "review_notes": "The reporter could not reproduce the problem reliably. The cause, responsible component and present-day behavior remain unverified; screenshots were not inspected."
+    },
+    {
+      "url": "https://github.com/hotosm/tasking-manager/issues/4874",
+      "summary": "Investigate a failed account-authorization step reported during password reset.",
+      "purpose": "A user could not continue when clicking the button allowing Tasking Manager to access their OpenStreetMap account.",
+      "work": "Investigate the failure described by the reporter. The text does not identify its cause or a repair.",
+      "background": "Tasking Manager organizes volunteer mapping work that contributes to OpenStreetMap. People use an OpenStreetMap account as part of signing in. The account-access button described here asks the person to allow Tasking Manager to use that account connection. Account authorization means granting that permission; password reset means replacing a forgotten or unwanted password. Those are different steps, even if a person encounters them during the same attempt to regain access. The author names password reset in the title but describes a failure at the permission button, so the exact failing step still needs to be established.",
+      "uncertainty": "Clarify whether the failure occurs during password reset or account authorization. Provide the exact screen, error response and reproduction steps.",
+      "sources": [
+        "https://learnosm.org/en/coordination/tasking-manager/"
+      ],
+      "project": "Coordinates volunteers mapping areas together in OpenStreetMap.",
+      "project_url": "https://github.com/hotosm/tasking-manager",
+      "source_hash": "ff074b4f0eb8ae86925a68c6d0aee01772d15afd6dd621a80f6817344f7a84f6",
+      "skills": [
+        {
+          "name": "Authentication",
+          "reason": "The failure occurs when the user permits access to an OpenStreetMap account.",
+          "quote": "allow Tasking Manager to access their OSM account"
+        },
+        {
+          "name": "Troubleshooting",
+          "reason": "The reported account-access failure needs investigation; its cause is unknown.",
+          "quote": "every time the user clicked the button"
+        }
+      ],
+      "review_notes": "The title calls this password reset while the body describes account authorization. The exact screen, error response and reproduction steps need clarification. Do not assume a password-storage defect."
+    },
+    {
+      "url": "https://github.com/mysociety/fixmystreet/issues/3577",
+      "summary": "Include waste-service emails in the developer preview page.",
+      "purpose": "Interpretation: this would let developers inspect those emails using the existing preview facility.",
+      "work": "Add the WasteWorks email templates to the list at /_dev/email/. The issue does not request redesigning the messages.",
+      "background": "WasteWorks is software through which residents access local-authority waste services. Its software includes email templates: reusable message text and layouts that can be filled with information for a particular message. Developers need a way to inspect those messages while working on the software. The posting identifies an existing developer-only preview page at /_dev/email/ and says the WasteWorks templates are missing from its list. Adding them would make those messages available to inspect there. The posting does not identify the individual messages or say that their wording needs changing.",
+      "uncertainty": "Identify which email templates and sample data should appear in the preview.",
+      "sources": [
+        "https://www.societyworks.org/services/waste/"
+      ],
+      "project": "Helps residents report local problems to the responsible authority.",
+      "project_url": "https://fixmystreet.org/overview/",
+      "source_hash": "e8baaf7e9b465ab27d696f7a0f071c2a2448e7ada9af9d177d0794e6130b82d5",
+      "skills": [
+        {
+          "name": "Template development",
+          "reason": "The request adds existing email templates to a developer preview list.",
+          "quote": "email templates have not yet been added to the developer email preview list"
+        }
+      ],
+      "review_notes": "The exact templates and sample data needed for each preview are not listed. The intended benefit is inferred from the requested preview capability."
+    },
+    {
+      "url": "https://github.com/openfoodfacts/openfoodfacts-server/issues/5690",
+      "summary": "Coordinate work to make food information useful across countries and languages.",
+      "purpose": "The stated goal is access to food information in users’ own languages.",
+      "work": "The saved post points to sub-issues and asks for issues to be added. It does not itself specify a concrete implementation task.",
+      "background": "Open Food Facts is a shared collection of food-product information, including ingredients and nutrition details taken from packaging. People in different countries need to read and contribute that information in languages and formats they understand. This posting brings together the broad goal of making the service useful internationally. Its sub-issues are separate GitHub postings intended to describe smaller pieces of that work. An umbrella initiative connects those pieces under a common goal; it does not necessarily contain instructions for a task itself. This saved posting states the goal but leaves the individual assignment to be chosen elsewhere.",
+      "uncertainty": "Choose a specific sub-issue, language or country and agree on the deliverable.",
+      "sources": [],
+      "project": "An open database of food products, ingredients and nutrition information.",
+      "project_url": "https://github.com/openfoodfacts/openfoodfacts-server",
+      "source_hash": "e7af1406b61084c22f38e7fa1e16244b4f6b310aa388a9828c42a5aad6d4b2e6",
+      "skills": [],
+      "review_notes": "A specific sub-issue, language or country and deliverable must be selected. The linked team wiki and full sub-issue set were not reviewed."
+    },
+    {
+      "url": "https://github.com/hackforla/website/issues/2265",
+      "summary": "Configure where the development, test and public website versions are hosted.",
+      "purpose": "The issue’s goal is to give the team separate website versions to review and publish.",
+      "work": "The checklist calls for moving files between named repositories, connecting their domains, and updating the follow-on issue after completion.",
+      "background": "The Hack for LA website team is planning how to run separate versions of its website. Developers need somewhere to work on changes, reviewers need somewhere to inspect them, and public visitors need the published site. Hosting makes a set of website files available to a browser; a domain name is the address used to reach that version. UAT stands for user acceptance testing, where people review whether changes behave as intended before release. This phase concerns putting files in the planned repositories and connecting the versions to their addresses. The saved instructions use inconsistent names for these versions, which must be resolved before moving anything.",
+      "uncertainty": "Resolve whether the plan uses two environments or separate UAT, development and public repositories, and confirm prerequisite #2264.",
+      "sources": [],
+      "project": "The organization’s website connects with volunteers, stakeholders and donors.",
+      "project_url": "https://www.hackforla.org/projects/website",
+      "source_hash": "f8cb38f9454b978ed0f1f8024b8fe2ea794bd492bb31c9b7d8c3cc8c0ee4f91a",
+      "skills": [
+        {
+          "name": "Website deployment",
+          "reason": "The checklist connects website files to hosted addresses.",
+          "quote": "Host the files"
+        },
+        {
+          "name": "Repository administration",
+          "reason": "The checklist calls for moving files between the team’s repositories.",
+          "quote": "Move files from hackforla/website-dev to hackforla/website"
+        }
+      ],
+      "review_notes": "The checklist mentions UAT, development and public repositories, while its overview describes two environments. This inconsistency and prerequisite #2264 need resolution. No migration was performed."
+    }
+  ]
+}

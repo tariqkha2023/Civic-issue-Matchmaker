@@ -4,13 +4,15 @@ Group 26 — Civic Issue Matchmaker
 
 ## What a clone includes
 
-Use branch **`feat/github-issue-transition`**. It includes the application,
+Use branch **`feat/context-search-review`**. It includes the application,
 documentation, and a compressed public snapshot with **21,558 GitHub issues**
-(3,539 open) and **2,220 already-computed AI requirements** from all five civic
-trackers. The bundle is about 9.3 MiB; see its [manifest](../data/public-issues-v1.manifest.json)
+(3,539 open) and **3,539 already-computed AI results** from all five civic
+trackers. The bundle is about 10.1 MiB; see its [manifest](../data/public-issues-v1.manifest.json)
 for generation time, counts and checksums. No operator database or credentials
-are shared. The remaining 1,319 open issues have no cached enhancement; teammates
-can still browse them without launching enrichment.
+are shared. All 3,539 open issues have a cached processing result: 2,389 accepted interpretations
+and 1,150 validation rejections. Rejected results use the original posting; setup
+and browsing do not retry inference or spend credits. The 20 saved research
+examples are included separately in `data/discovery-reviews.json`.
 
 ## First setup
 

@@ -1,5 +1,15 @@
 # Context and skill discovery pilot
 
+The authenticated Discover page now also uses this pilot's saved context and
+researched skill suggestions for unchanged source postings, identified by GitHub
+URL rather than local IDs. The public review bundle is `data/discovery-reviews.json`.
+Other issues use their current cached AI interpretation and source metadata.
+Main-app search includes related wording, relevance sorting, explained background
+matches, and a suggested-skills toggle. The toggle affects retrieval only.
+Personal matching uses the signed-in profile and the production scorer's reduced
+weight for inferred skills. The standalone page below remains a frozen comparison
+with its temporary profile and equal skill weights.
+
 Open `/docs/interpretation-trial/discover.html` on the local Vite server. This is a standalone test version of Discover for the same 20 issues, not a change to the authenticated application or backend scoring.
 
 ## Teammate review

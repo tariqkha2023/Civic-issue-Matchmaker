@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "test:unit": "node --test docs/interpretation-trial/discovery-search.test.js docs/interpretation-trial/profile-match.test.js"
   },
   "dependencies": {
     "@openai/codex": "^0.165.0",
@@ -16,6 +17,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.10.2",
     "@playwright/test": "1.56.1",
     "@vitejs/plugin-react": "^4.3.4",
     "vite": "6.4.5"

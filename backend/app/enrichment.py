@@ -126,7 +126,9 @@ def effective_metadata(task, enrichment=None, correction=None, project=None):
     meta.update(correction or {})
     if correction and "skills" in correction:
         meta["skill_weights"] = {skill: 1.0 for skill in correction["skills"]}
-    return meta
+    from app.discovery_context import add_reviewed_skills
+
+    return add_reviewed_skills(task, meta, correction)
 
 
 def validate_extraction(task, raw, *, check_evidence=True):

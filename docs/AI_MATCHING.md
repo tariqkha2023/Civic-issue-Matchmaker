@@ -102,8 +102,9 @@ migration is needed: interpretation is stored in the existing enrichment JSON.
 
 Snapshot import/export accepts the exact v2 or v3 version/model/prompt combination
 and validates source fingerprints against these supported versions. New nested
-fields use an explicit public allowlist. The bundled 21,558 issues and 2,220 v2
-caches remain unchanged and usable, but do not acquire summaries automatically.
+fields use an explicit public allowlist. The bundled 21,558 issues now include current v3 results for all 3,539 open
+issues: 2,389 accepted interpretations and 1,150 cached validation rejections.
+Rejected results remain source-derived; they do not automatically retry.
 
 Original label-derived metadata is preserved. Valid AI skills are merged; explicit source-label skills retain full weight. Curator corrections take precedence, and curator-approved skills receive full weight. AI suggestions remain visible as suggestions with rationale/quotes.
 

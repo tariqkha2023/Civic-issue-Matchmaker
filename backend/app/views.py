@@ -2,6 +2,7 @@
 
 from sqlalchemy import select
 
+from app.discovery_context import reviewed_context
 from app.enrichment import effective_metadata, project_context
 from app.matching import SCORE_VERSION, evidence_strength, score
 from app.store import (
@@ -14,6 +15,7 @@ from app.store import (
     RelevanceFeedback,
     SourceSettings,
 )
+from app.task_guidance import task_guidance
 
 
 def projection_context(db, user, task_ids=None):
@@ -94,6 +96,15 @@ def task_view(task, repo, saved=False, profile=None, db=None, user=None, context
         else {},
     )
     feedback = context["feedback"].get(task.id)
+    review = reviewed_context(task)
+    uncertainties = (
+        [review.get("uncertainty", "")]
+        if review
+        else (metadata.get("interpretation") or {}).get("uncertainties", [])
+    )
+    guidance = task_guidance(uncertainties)
+    if review and review.get("review_notes"):
+        guidance["review_notes"] = task_guidance([review["review_notes"]])["review_notes"]
     data = {
         "id": task.id,
         "score_version": SCORE_VERSION,
@@ -111,11 +122,15 @@ def task_view(task, repo, saved=False, profile=None, db=None, user=None, context
         "saved": saved,
         "upstream": context["info"].get(task.id, {}),
         "project": context["projects"].get(repo.id, {}),
+        "reviewed_context": review,
+        "clarifications": guidance,
         "source_enabled": repo.enabled,
         "metadata_origin": "curator reviewed"
         if correction
         else "AI enriched + source labels"
         if metadata.get("ai_model")
+        else "saved research + source labels"
+        if metadata.get("research_evidence")
         else "source derived",
         "can_manage": "administrator" in context["roles"]
         or ("maintainer" in context["roles"] and repo.id in context["scopes"]),

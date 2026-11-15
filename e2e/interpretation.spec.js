@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures.js';
 
 // Offline API fixtures: these tests never need a database or an AI service.
 test('cached interpretation and original-only issues remain understandable and accessible', async ({ page }, info) => {
@@ -12,7 +12,7 @@ test('cached interpretation and original-only issues remain understandable and a
     labels: [], explanations: [], score: null,
   };
   const enhanced = {
-    ...original, id: 902, title: 'Interpreted map controls', search_match: 'inferred_concept',
+    ...original, id: 902, title: 'Interpreted map controls', search_match: 'inferred_concept', clarifications: { questions: ['The affected component is not specified.'], review_notes: ['This review did not inspect the screenshot.'] },
     metadata: { ...original.metadata, interpretation: {
       summary: { text: 'Make the map usable without a mouse.', source_quote: quote },
       objective: { text: 'Let people navigate using keys.', source_quote: quote },
@@ -40,20 +40,21 @@ test('cached interpretation and original-only issues remain understandable and a
   const ai = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Interpreted map controls', exact: true }) });
   const plain = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Map controls', exact: true }) });
   await expect(ai.getByText('Make the map usable without a mouse.', { exact: true })).toBeVisible();
-  await expect(ai.getByText('Summary source: AI interpretation. Check the original issue before starting.', { exact: true })).toBeVisible();
+  await expect(ai.getByText('This review did not inspect the screenshot.', { exact: true })).not.toBeVisible();
   await expect(ai.getByRole('heading', { name: 'What this task aims to achieve' })).toBeVisible();
   await expect(ai.getByText('The affected component is not specified.', { exact: true })).toBeVisible();
   await expect(ai.getByText(/Found through AI-inferred related terminology/)).toBeVisible();
   await expect(plain.locator('.issueExcerpt')).toHaveText(`Problem ${quote}`);
-  await expect(plain.getByText('Summary source: original issue excerpt. Check the original issue before starting.', { exact: true })).toBeVisible();
+  await expect(plain.getByRole('heading', { name: 'Confirm with the project' })).toHaveCount(0);
   const missing = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Missing description', exact: true }) });
-  for (const card of [ai, plain, missing]) {
-    await expect(card.getByRole('region', { name: 'Task overview' }).getByRole('heading')).toHaveText([
-      'Task summary', 'What this task aims to achieve', 'Work described in the issue', 'Still unclear',
-    ]);
+  await expect(ai.getByRole('region', { name: 'Task overview' }).getByRole('heading')).toHaveText([
+    'Task summary', 'What this task aims to achieve', 'Work described in the issue', 'Confirm with the project',
+  ]);
+  for (const card of [plain, missing]) {
+    await expect(card.getByRole('region', { name: 'Task overview' }).getByRole('heading')).toHaveText(['Task summary']);
   }
-  await expect(plain.getByText('No separate objective available. Check the original issue for its purpose.', { exact: true })).toBeVisible();
-  await expect(plain.getByText('No separate work breakdown available. Check the original issue for activities and deliverables.', { exact: true })).toBeVisible();
+  await ai.getByText('Match details and source metadata', { exact: true }).click();
+  await expect(ai.getByText('This review did not inspect the screenshot.', { exact: true })).toBeVisible();
   await expect(missing.locator('.issueExcerpt')).toHaveText('No description supplied.');
   await expect(plain.getByText('Not enough information to score', { exact: true })).toBeVisible();
   await expect(plain.locator('.issueFacts')).not.toContainText('Estimated effort');
@@ -71,4 +72,43 @@ test('cached interpretation and original-only issues remain understandable and a
   await expect(page.getByText('Let people navigate using keys.', { exact: true })).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(info.project.use.viewport.width);
   expect(errors).toEqual([]);
+});
+
+test('main discovery combines saved context, suggested skills and the signed-in profile', async ({ page }) => {
+  const item = {
+    id: 91, title: 'Clarify selected map features', description: 'Please mention that the point is part of something.',
+    repository: 'openstreetmap/iD', project: { name: 'OpenStreetMap iD' },
+    status: 'open', url: 'https://github.com/openstreetmap/iD/issues/8695',
+    upstream: { number: 8695 }, source_enabled: true, labels: [], explanations: [], score: 100,
+    search_match: 'suggested_skill', metadata: { skills: ['frontend development'], topics: ['open mapping'], skill_weights: { 'frontend development': 0.5 }, research_evidence: [{ skill: 'frontend development', rationale: 'Changes the feature display.', quote: 'mention that the point is part of something' }] },
+    reviewed_context: { summary: 'Explain how a point belongs to a map feature.', project: 'A community map editor.', background: 'Nodes can belong to larger mapped objects.', purpose: 'Avoid accidental deletions.', work: 'Clarify the selected feature display.', uncertainty: 'The wording needs confirmation.', sources: ['https://wiki.openstreetmap.org/wiki/Elements'], project_url: 'https://github.com/openstreetmap/iD', provenance: 'Saved public research.' },
+  };
+  await page.route('**/api/**', route => {
+    const url = new URL(route.request().url());
+    const responses = {
+      '/api/me': { id: 1, roles: ['contributor'], profile: { name: 'Tester', skills: ['frontend development'], interests: ['open mapping'] } },
+      '/api/me/unread': { notifications: 0, messages: 0 },
+      '/api/projects': [],
+      '/api/recommendations': { items: url.searchParams.get('include_suggested') === 'false' && url.searchParams.get('q') ? [] : [item], total: url.searchParams.get('include_suggested') === 'false' && url.searchParams.get('q') ? 0 : 1 },
+      '/api/tasks/91': item,
+    };
+    return route.fulfill({ json: responses[url.pathname] ?? {} });
+  });
+  await page.goto('/#/home');
+  await expect(page.getByRole('region', { name: 'Your matching profile' })).toContainText('frontend development');
+  await expect(page.getByText('Nodes can belong to larger mapped objects.', { exact: true })).toBeVisible();
+  await expect(page.getByText('Matched skills: frontend development. Not in your profile: none.', { exact: true })).toBeVisible();
+  await page.getByText('Why these skills are suggested', { exact: true }).click();
+  await expect(page.getByText('Changes the feature display.', { exact: true })).toBeVisible();
+  await page.getByLabel('Search', { exact: true }).fill('frontend');
+  await expect(page.getByText('1 matching issues', { exact: true })).toBeVisible();
+  const filtered = page.waitForResponse(r => r.url().includes('/api/recommendations?') && new URL(r.url()).searchParams.get('include_suggested') === 'false');
+  await page.getByLabel('Include suggested skills and inferred concepts in search').uncheck();
+  await filtered;
+  await expect(page.getByRole('heading', { name: 'No issues found' })).toBeVisible();
+  await page.getByLabel('Include suggested skills and inferred concepts in search').check();
+  await expect(page.getByRole('heading', { name: item.title, exact: true })).toBeVisible();
+  await page.getByRole('button', { name: item.title, exact: true }).click();
+  await expect(page.getByRole('heading', { name: item.title, exact: true })).toBeFocused();
+  await expect(page.getByText(item.reviewed_context.background, { exact: true })).toBeVisible();
 });

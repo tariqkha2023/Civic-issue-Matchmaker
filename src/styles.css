@@ -290,3 +290,14 @@ details{margin-top:18px}summary{cursor:pointer;color:#19594f;font-weight:600}
 .issueInterpretation p,.issueInterpretation ul{margin:4px 0 12px}
 .issueInterpretation ul{padding-left:22px}
 .interpretationUncertainty{border-left:3px solid #a98132;background:#fff9eb;padding:4px 14px;color:#624b20}
+/* Context and skill discovery, shared with the authenticated issue workflow. */
+.filters .suggestionToggle { display: flex; flex-direction: row; align-items: center; gap: .6rem; }
+.suggestionToggle input { width: auto; }
+.discoveryProfile { margin: 1rem 0; }
+.discoveryProfile h2 { font-size: 1.1rem; }
+.issueBackground, .suggestedSkills { margin: 1rem 0; padding: 1rem; border-radius: .6rem; background: #f1f7f6; }
+.suggestedSkills blockquote { margin: .6rem 0; padding-left: .8rem; border-left: 3px solid #227c72; overflow-wrap: anywhere; }
+.searchReason { color: #195d55; font-weight: 600; }
+.matchSkills { overflow-wrap: anywhere; }
+.eyebrow { color: #536b68; }
+.sideLabel { color: #90aaa7; }

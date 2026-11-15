@@ -190,18 +190,18 @@ def test_structured_snapshot_roundtrip_preserves_only_public_fields(db_engine, t
         assert effective_metadata(item, row, project=project_context(PROJECT))["interpretation"] == interpretation()
 
 
-def test_bundled_v2_snapshot_remains_readable_without_reprocessing():
+def test_bundled_current_snapshot_covers_open_issues_without_reprocessing():
     snapshot = load_snapshot(DEFAULT_SNAPSHOT)  # Read-only; never import into a developer DB.
     issues = [issue for source in snapshot.sources for issue in source.issues]
     assert len(issues) == 21558
-    assert sum(issue.enrichment is not None for issue in issues) == 2220
+    assert sum(issue.enrichment is not None for issue in issues) == 3539
     for source in snapshot.sources:
         item = next(i for i in source.issues if i.enrichment is not None)
         cache = item.enrichment
         row = SimpleNamespace(model=cache.model, content_hash=cache.content_hash,
                               fields=cache.fields.model_dump(), updated_at=cache.updated_at)
         assert cached_fields(item, row, project_context(source.project.model_dump()))
-        assert row.content_hash != fingerprint(item, project_context(source.project.model_dump()))
+        assert row.content_hash == fingerprint(item, project_context(source.project.model_dump()))
 
 
 def test_explicit_job_upgrades_legacy_once_and_caches_structured_result(db_engine, monkeypatch):

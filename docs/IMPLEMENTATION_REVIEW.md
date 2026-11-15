@@ -72,3 +72,60 @@ These are not silently marked N/A. Public hosting, write-back/OAuth and email ar
 Preexisting local `package.json`/lockfile changes adding a coding-tool dependency are intentionally excluded from this implementation's commits. Private presentation files, databases, credentials and backups remain ignored.
 
 The committed dependency baseline was also installed and built in a clean temporary export. Vite is pinned to 6.4.5; that clean install reported zero npm audit vulnerabilities. Private-source rejection and safe repository-rename redirects have additional regression coverage.
+
+## Integrated local release checks — November 15, 2026
+
+The main app now combines the context/skill discovery trial with authenticated
+profiles, the full current AI cache, saving/tracking and curator permissions.
+Contributor task guidance excludes internal review methodology. Those limitations
+remain available in evidence details. Empty fallback sections are omitted.
+Profile and sign-in copy now accurately describe skills/interests matching.
+
+Observed verification for this revision:
+
+- 94 backend tests passed; five legacy PostgreSQL tests remain skipped for the
+  selected SQLite delivery. One test verifies 500 active identities under 32
+  parallel authenticated reads with no identity mixups or lost sessions.
+- 45 browser checks passed across Chromium at 1920/1440/360-pixel widths, Firefox
+  and WebKit (27 Chromium and 18 Firefox/WebKit checks in the final runs).
+- Automated WCAG A/AA checks cover account forms and main contributor workspaces
+  in all five browser configurations. Low-contrast labels found by the scan were
+  corrected. This is automated coverage, not a full manual accessibility audit.
+- Production build, frontend search/matching unit tests, Ruff and whitespace
+  checks passed. The dependency installation audit reported zero vulnerabilities.
+- A fresh isolated offline import restored all 21,558 issues and all 3,539 current
+  caches, with no external requests. Repeat import preserved local accounts and
+  passwords. Public bundle checks found no live account emails, password hashes
+  or configured operator keys. The bundle contains 2,389 accepted interpretations
+  and 1,150 cached validation rejections; accepted does not mean independently
+  verified for accuracy.
+- LAN login and real issue #8695 were checked through the running Vite proxy.
+  The real-data search took about 1.05 seconds on this host in that smoke check;
+  this is not the formal concurrent-load measurement.
+
+The local app remains on `http://192.168.255.9:5173/` on this host. The backend is
+loopback-only and allows that browser origin. Existing private data was preserved.
+The refreshed public bundle and review data are ready for teammate distribution.
+
+### Remaining formal acceptance
+
+Do not mark the whole SRS 100% accepted from these results. The remaining work is:
+
+1. Record the 30-minute, 100-active-user latency test and 50-source/100k-record
+   scan measurement. The 500-session identity probe above is a narrower test.
+2. Complete a manual keyboard/screen-reader/WCAG review and target-browser/version
+   coverage beyond the recorded Playwright engines.
+3. Run the five-participant first-use study below and assess AI extraction and
+   recommendation usefulness against a human-reviewed sample.
+4. Run PostgreSQL-specific checks if PostgreSQL becomes the selected runtime.
+
+### First-use study ready to run
+
+Give five representative participants the app URL and ask them, without coaching,
+to create an account, enter their skills/interests, find a task and open its GitHub
+posting. Time each attempt from arrival until the GitHub page opens. Record an
+anonymous participant ID, elapsed seconds, success/failure, assistance required
+and confusing steps. The stated target is at least four of five completing within
+five minutes without assistance. Record actual observations; no study has yet
+been performed. Separately ask reviewers to compare suggested skills, summary and
+task questions with each original posting and record unsupported claims and gaps.

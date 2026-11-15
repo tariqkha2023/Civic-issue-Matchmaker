@@ -7,7 +7,7 @@ const databaseUrl = 'sqlite:///' + resolve('.e2e/civic.db').replaceAll(String.fr
 
 export default defineConfig({
   testDir: './e2e',
-  testMatch: ['civic.spec.js', 'interpretation.spec.js'],
+  testMatch: ['civic.spec.js', 'interpretation.spec.js', 'accessibility.spec.js'],
   fullyParallel: false,
   workers: 1,
   use: { baseURL: browserOrigin, trace: 'retain-on-failure' },
@@ -15,6 +15,8 @@ export default defineConfig({
     { name: 'wide', use: { browserName: 'chromium', viewport: { width: 1920, height: 1080 } } },
     { name: 'desktop', use: { browserName: 'chromium', viewport: { width: 1440, height: 900 } } },
     { name: 'mobile', use: { browserName: 'chromium', viewport: { width: 360, height: 800 } } },
+    { name: 'firefox', use: { browserName: 'firefox', viewport: { width: 1440, height: 900 } } },
+    { name: 'webkit', use: { browserName: 'webkit', viewport: { width: 1440, height: 900 } } },
   ],
   webServer: [
     { command: `${python} e2e/prepare.py && ${python} -m uvicorn app.main:app --app-dir backend --port 8001`, url: 'http://127.0.0.1:8001/health', env: { DATABASE_URL: databaseUrl, APP_ORIGIN: browserOrigin, COOKIE_SECURE: 'false', ENABLE_WORKER: 'false', APP_DEMO: 'false' }, reuseExistingServer: false },

@@ -2,9 +2,9 @@
 
 **Team:** Group 26
 
-**Version:** 1.0
+**Version:** 1.1
 
-**Effective date:** October 28, 2026
+**Effective date:** November 15, 2026 (original baseline October 28, 2026)
 
 **Status:** Target scope for the transition to real GitHub issue sources. This document defines intended behavior; it is not a claim that every function is implemented.
 
@@ -122,7 +122,7 @@ Each project page shows the civic mission, repository link, relevant languages/t
 
 ### Issue discovery
 
-Import and display the full source collection. Default discovery shows open issues from enabled sources. Users can filter by project, civic topic, technical skill, difficulty, estimated effort, source state, and upstream assignment status, and search titles/body/labels. Support sorting, pagination, saved issues, and issue detail views.
+Import and display the full source collection. Default discovery shows open issues from enabled sources. Users can filter by project, civic topic, technical skill, source state and upstream assignment, and search source postings, task interpretations and project context. Difficulty and estimated effort remain available as metadata and API filters, but are not required in the main Discover controls. Support sorting, pagination, saved issues, and issue detail views.
 
 Show original labels, upstream assignees, source URL, GitHub issue number, freshness, and matching explanations. A local database ID must not be presented as though it were the original GitHub issue number.
 
@@ -138,13 +138,15 @@ Record attempted/successful scan times, completeness, counts and sanitized failu
 
 ### Matching and explanations
 
-Rank issues using technical skill fit, civic interests, experience/difficulty, time/effort, optional repository preference, and bounded history/feedback adjustments. Display the factors and metadata coverage behind every score. With insufficient data, show limited confidence or an unscored issue rather than fabricate certainty.
+Rank issues using technical skill fit and civic interests, with repository preference and bounded history/feedback tie-breaking. Display the factors and evidence availability behind every score. With insufficient issue-specific or profile skill information, leave the issue unscored.
 
-The approved `evidence-v4` scoring weights are skills 60%, difficulty/experience 20%, civic interests 15%, and explicit availability/effort 5%. Scores use a fixed 100-point denominator. Matching known factors earn points; missing factors remain unknown and limit the available score instead of inflating the remaining factors. A percentage requires issue-specific skill evidence and profile skills. Otherwise display Limited information. Repository preferences, own feedback and completed activity affect equal-fit ordering only, not assessed fit. Cached LLM enrichment of public issue text supplies evidence-backed requirements; original labels and curator overrides remain preserved, with curator corrections taking priority. AI does not estimate effort or assign fit percentages. Distinguish stated and inferred skills with rationales and optional source quotations; inferred skills carry half the evidence weight of stated or curator-reviewed skills, and evidence coverage reflects this discount. Basic schema validation remains but inference is not rejected for lacking literal keywords. Record model/version and provenance; invalidate enrichment when source content changes. Processing is an explicit, budget-limited operator action rather than a request-time dependency.
+The integrated `skills-interests-v5` model uses skills 80% and civic interests 20% when both are available. Omit unknown factors and rescale available weights. Inferred skill suggestions carry half the weight of stated or curator-reviewed skills within skill alignment; evidence availability is reported separately. Difficulty/experience and availability/effort are retained as metadata but no longer affect personal compatibility. A high score is an explanation of available evidence, not a probability of acceptance.
 
-A repository language is a weak project-level signal; it is not proof that a particular issue requires that language. Prefer explicit issue evidence and curator-reviewed classifications. Preserve unknown difficulty/effort. Display metadata provenance and coverage separately from compatibility. Scores are guidance, not estimates of acceptance probability.
+Discover also supports relevance sorting and a suggested-skills search toggle independent of compatibility. Source text, grounded interpretations, suggested skills and project background have explained search roles. Saved research is keyed by stable GitHub URL and unchanged source text, with curator skill corrections taking precedence. Contributor guidance describes unresolved task requirements only. Review-process limitations belong in source/evidence details.
 
-Location does not affect the score in this scope. The product supports remote software contribution; civic interests identify the cause a person cares about. Scoring weights must be versioned and explainable if changed.
+Source labels and curator corrections remain preserved. Project languages are context, not mandatory task requirements; location does not affect compatibility. AI processing is an explicit operator action with budget reservations and content/version invalidation, never a requirement for browsing.
+
+This revision records the main-app integration requested on November 15, 2026 and supersedes the earlier evidence-v4 scoring/filter presentation. The formal quality targets in section 10 remain unchanged.
 
 ### Metadata review
 

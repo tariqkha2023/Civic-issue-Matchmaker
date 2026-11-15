@@ -298,10 +298,11 @@ def recommendations(
     difficulty: str = "",
     max_effort: float | None = Query(None, ge=0, le=10000),
     status: Literal["open", "closed", "all"] = "open",
-    sort: Literal["compatibility", "recency", "difficulty", "effort"] = "compatibility",
+    sort: Literal["compatibility", "relevance", "recency", "difficulty", "effort"] = "compatibility",
     page: int = Query(1, ge=1),
     page_size: int = Query(12, ge=1, le=100),
     assignment: Literal["", "assigned", "unassigned"] = "",
+    include_suggested: bool = True,
 ):
     return discover(
         db,
@@ -317,6 +318,7 @@ def recommendations(
         page,
         page_size,
         assignment,
+        include_suggested,
     )
 
 

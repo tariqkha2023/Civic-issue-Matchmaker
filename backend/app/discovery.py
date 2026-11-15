@@ -2,40 +2,18 @@
 
 import os
 
-from sqlalchemy import String, cast, or_, select
+from sqlalchemy import select
 
+from app.discovery_context import reviewed_context
+from app.discovery_search import search_result, skill_matches
 from app.enrichment import effective_metadata, project_context
-from app.store import IssueEnrichment, MetadataCorrection, Repository, SavedTask, Task
+from app.store import Repository, SavedTask, Task
 from app.views import projection_context, task_view
 
 
 def search_match(task, meta, terms):
-    """Only usable, current enrichment is searched; never provenance or uncertainty.
-
-    Concepts increase recall, not the match score. All query words must
-    match, in any order. Keep the SQL prefilter a superset of these fields.
-    """
-    source = " ".join([task.title, task.description, *task.labels,
-                       *task.metadata_fields.get("skills", []),
-                       *task.metadata_fields.get("topics", [])]).lower()
-    if all(term in source for term in terms):
-        return "source"
-    info = meta.get("interpretation") or {}
-    text = [*meta["skills"], *meta["topics"]]
-    for key in ["summary", "objective"]:
-        if info.get(key):
-            text.append(info[key]["text"])
-    text.extend(item["text"] for item in info.get("activities", []))
-    text.extend(item["text"] for item in info.get("concepts", []) if item["basis"] == "explicit")
-    interpreted = source + " " + " ".join(text).lower()
-    if all(term in interpreted for term in terms):
-        return "interpreted"
-    expanded = interpreted + " " + " ".join(
-        item["text"] for item in info.get("concepts", []) if item["basis"] == "inferred"
-    ).lower()
-    if all(term in expanded for term in terms):
-        return "inferred_concept"
-    return None
+    result = search_result(task, meta, " ".join(terms))
+    return result["kind"] if result else None
 
 
 def discover(
@@ -52,6 +30,7 @@ def discover(
     page,
     page_size,
     assignment="",
+    include_suggested=True,
 ):
     saved = set(
         db.scalars(select(SavedTask.task_id).where(SavedTask.user_id == user.id))
@@ -65,31 +44,9 @@ def discover(
         statement = statement.where(Task.status == status)
     if repository:
         statement = statement.where(Repository.path == repository)
-    terms = q.lower().split()
-    for term in terms:
-        pattern = (
-            "%" + term.replace("\\", "\\\\").replace("%", "\\%").replace("_", "\\_") + "%"
-        )
-        statement = statement.where(
-            or_(
-                Task.title.ilike(pattern, escape="\\"),
-                Task.description.ilike(pattern, escape="\\"),
-                cast(Task.labels, String).ilike(pattern, escape="\\"),
-                cast(Task.metadata_fields, String).ilike(pattern, escape="\\"),
-                Task.id.in_(
-                    select(IssueEnrichment.task_id).where(
-                        cast(IssueEnrichment.fields, String).ilike(pattern, escape="\\")
-                    )
-                ),
-                Task.id.in_(
-                    select(MetadataCorrection.task_id).where(
-                        cast(MetadataCorrection.fields, String).ilike(
-                            pattern, escape="\\"
-                        )
-                    )
-                ),
-            )
-        )
+    # Context and synonym matches may exist only outside the source SQL columns.
+    # Apply the complete search once, against validated effective metadata below.
+    terms = q.split()
     candidates = list(db.execute(statement))
     context = projection_context(db, user, [t.id for t, _ in candidates])
     results = []
@@ -113,12 +70,24 @@ def discover(
             if repo.id in context["projects"]
             else {},
         )
-        match = search_match(task, meta, terms)
+        match = search_result(
+            task,
+            meta,
+            q,
+            include_suggested,
+            reviewed_context(task),
+            context["projects"].get(repo.id, {}),
+        )
         if terms and match is None:
             continue
         if topic and topic.lower() not in [t.lower() for t in meta["topics"]]:
             continue
-        if skill and skill.lower() not in meta["skills"]:
+        searchable_skills = [
+            s
+            for s in meta["skills"]
+            if include_suggested or meta.get("skill_weights", {}).get(s, 1) >= 1
+        ]
+        if skill and not any(skill_matches(s, skill) for s in searchable_skills):
             continue
         if difficulty and difficulty != meta["difficulty"]:
             continue
@@ -128,10 +97,13 @@ def discover(
             continue
         view = task_view(task, repo, task.id in saved, user.profile, db, user, context)
         if terms:
-            view["search_match"] = match
+            view["search_match"] = match["kind"]
+            view["search_related_wording"] = match["related_wording"]
+        view["search_rank"] = match["rank"] if match else 0
         results.append(view)
     levels = {"Beginner": 0, "Intermediate": 1, "Advanced": 2}
     keys = {
+        "relevance": lambda t: (t["search_rank"], -t["first_seen"], t["id"]),
         "compatibility": lambda t: (
             -(t["score"] if t["score"] is not None else -1),
             -t["coverage"],
