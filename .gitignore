@@ -34,3 +34,6 @@ test-results/
 # Private runtime backups
 backups/
 *.tmp
+
+# Redundant bundle of the individually versioned poster variants
+/showcase-poster/variants/All_Three_Poster_Versions.zip

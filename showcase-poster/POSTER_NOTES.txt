@@ -1,0 +1,87 @@
+CIVIC ISSUE MATCHMAKER — SENIOR DESIGN SHOWCASE
+
+Deliverables
+- Civic_Issue_Matchmaker_Poster.pptx: one editable 48 x 36 inch landscape slide.
+- Civic_Issue_Matchmaker_Poster.pdf: vector PDF at the same physical dimensions.
+- Civic_Issue_Matchmaker_Poster_preview.png: preview of the PDF.
+- build_poster.py: reproducible generator for PPTX and PDF.
+
+Print the PDF at 100% / actual size on 48 x 36 inch landscape stock.
+The PowerPoint's text, bars, workflow boxes and arrows are editable objects.
+Official FAU artwork was extracted from the supplied first-slide template.
+The original template was not modified.
+
+Confirmed by the user
+Team: Davian Brooks, Michael Anstett, Tariq Khan, Andre Walia, David Landivar.
+Project advisor: Dr. Hari Kalva.
+Sponsor: Code for America.
+Group 26 is the repository's team identifier, not an assigned showcase number.
+No showcase number or public QR destination was supplied, so neither is included.
+Faculty course facilitator names were retained from the supplied template.
+
+Evidence
+Source counts: data/public-issues-v1.manifest.json, created Oct. 29, 2026.
+- OpenStreetMap iD: 8,091 total; 836 open.
+- Hack for LA: 5,185 total; 458 open.
+- Open Food Facts: 4,384 total; 1,623 open.
+- HOT Tasking Manager: 2,339 total; 417 open.
+- FixMyStreet: 1,559 total; 205 open.
+Total: 21,558 public issues; 2,220 cached AI enrichment records.
+Teal and light-blue chart segments encode open and closed issues respectively.
+Counts describe the bundled snapshot, not a live GitHub query.
+Cached AI record counts do not measure extraction accuracy or successful matches.
+
+Matching weights: README.md, docs/AI_MATCHING.md and docs/PROJECT_SCOPE.md.
+60% skills; 20% difficulty/experience; 15% civic interests; 5% availability/effort.
+AI-inferred evidence carries half weight. Coverage is separate from fit.
+
+Verification: docs/REQUIREMENTS_STATUS.md and docs/IMPLEMENTATION_REVIEW.md,
+Oct. 28, 2026: 78 backend tests passed, five PostgreSQL-only tests skipped;
+12 Chromium workflows passed; production build and Ruff passed.
+These are recorded historical checks, not tests rerun while making this poster.
+No measured user benefit, AI accuracy, load, acceptance or accessibility rate
+is asserted. The poster identifies those evaluations as future work.
+
+Rebuild
+Requires Python 3 with python-pptx, reportlab and Pillow, plus Lato fonts.
+Run: python3 showcase-poster/build_poster.py
+Render preview with Ghostscript:
+gs -q -dSAFER -dBATCH -dNOPAUSE -sDEVICE=png16m -r45 -sOutputFile=showcase-poster/Civic_Issue_Matchmaker_Poster_preview.png showcase-poster/Civic_Issue_Matchmaker_Poster.pdf
+
+Validation
+The PDF preview was visually inspected. Generated text boxes are checked against
+page bounds and wrapped using Lato font metrics. The PPTX was reopened to check
+slide size, slide count and required text. PowerPoint application rendering was
+not available in this environment.
+
+Latest revision: fresh screenshot version
+Run build_screenshot_version.py to rebuild the current primary deliverables.
+The embedded image is Site_Discovery_Fresh.png, newly captured with Chromium
+from the running React/FastAPI app on isolated local ports 5185/8015.
+The app used a separate temporary database restored from the public snapshot
+and a showcase-only contributor profile. No API responses or source issue
+content were mocked. CAPTURE_RECORD.json identifies the real issue and capture.
+Evidence-source cards and implemented matching weights remain editable.
+The source-count chart and earlier diagrams were replaced by the screenshot.
+
+CURRENT VERSION — ORIGINAL TEMPLATE PRESERVED
+This supersedes the earlier rebuild instructions above.
+Run build_template_poster.py, then render that PPTX with LibreOffice Impress.
+The primary PPTX now originates directly from slide 1 of the supplied template.
+All original text-box geometry, text-body properties, first-run typography and
+font colors are asserted unchanged. Original masters, layouts and themes are
+verified unchanged. New graphics occupy the seven original image-slot rectangles.
+The fresh screenshot Site_Issue_Fresh.png is placed in the original upper-left
+image slot. All five team names fit the original team box, with two on one line.
+Body copy was condensed to fit the fixed boxes at their original font settings.
+The full user-provided problem statement is retained in speaker notes.
+The primary PDF is now rendered from the actual PPTX, not drawn separately.
+
+LATEST VISUAL REVISION
+The screenshot has been removed from the primary poster.
+The seven original graphics areas now contain colorful, editable PowerPoint
+shapes and a native doughnut chart using the implemented 60/20/15/5 weights.
+All added graphic text uses black Lato; original template text styling and
+geometry remain unchanged. Color is applied through shapes and chart fills.
+No image generation was used. Rebuild with build_template_poster.py and render
+that PowerPoint with LibreOffice Impress to update the PDF and preview.
