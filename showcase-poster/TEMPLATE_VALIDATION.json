@@ -1,0 +1,313 @@
+{
+  "original_text_styles_and_geometry_preserved": true,
+  "template_image_slots": {
+    "14": [
+      613872,
+      17032308,
+      13667040,
+      10639404
+    ],
+    "15": [
+      613872,
+      5885004,
+      13667040,
+      10639404
+    ],
+    "16": [
+      14829348,
+      5885004,
+      13667040,
+      10639404
+    ],
+    "17": [
+      14829354,
+      17032308,
+      6586092,
+      5105148
+    ],
+    "18": [
+      14829354,
+      22566564,
+      6586092,
+      5105148
+    ],
+    "19": [
+      21886842,
+      17032308,
+      6586092,
+      5105148
+    ],
+    "20": [
+      21910302,
+      22566564,
+      6586092,
+      5105148
+    ]
+  },
+  "original_text_signatures": {
+    "0": {
+      "geometry": [
+        1626276,
+        2170920,
+        11395716,
+        1431180,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\n  <a:normAutofit fontScale=\"92500\" lnSpcReduction=\"10000\"/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n</a:rPr>\n"
+    },
+    "1": {
+      "geometry": [
+        1626276,
+        809616,
+        8426448,
+        1646232,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"8640\" b=\"1\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "2": {
+      "geometry": [
+        14714196,
+        607832,
+        6495528,
+        1097280,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"4320\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "3": {
+      "geometry": [
+        14714202,
+        1395146,
+        6701244,
+        3331044,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:noAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"3240\" b=\"0\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "4": {
+      "geometry": [
+        23955004,
+        3179011,
+        6495528,
+        1097280,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"4320\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "5": {
+      "geometry": [
+        23955003,
+        4080343,
+        8425547,
+        971819,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"3240\" b=\"0\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "6": {
+      "geometry": [
+        29675574,
+        5767434,
+        8425548,
+        1058088,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\" anchor=\"b\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"5040\" dirty=\"0\">\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "7": {
+      "geometry": [
+        29675580,
+        6707952,
+        13314336,
+        5521044,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:noAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"3960\" b=\"0\" dirty=\"0\">\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "8": {
+      "geometry": [
+        1358600,
+        3893680,
+        10816044,
+        1097280,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"4320\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "9": {
+      "geometry": [
+        29675592,
+        14850870,
+        13480872,
+        1058088,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\" anchor=\"b\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"5040\" dirty=\"0\">\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "10": {
+      "geometry": [
+        29675580,
+        15791382,
+        13667040,
+        5251272,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:noAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"3960\" b=\"0\" dirty=\"0\">\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "11": {
+      "geometry": [
+        29734338,
+        23826459,
+        13667040,
+        6146076,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:noAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"3960\" b=\"0\" dirty=\"0\">\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "12": {
+      "geometry": [
+        29675574,
+        22846749,
+        13480872,
+        1058088,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\" anchor=\"b\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"5040\" dirty=\"0\">\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "13": {
+      "geometry": [
+        33018130,
+        2945865,
+        2002329,
+        1645920,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\" anchor=\"b\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"8640\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "14": {
+      "geometry": [
+        613872,
+        17032308,
+        13667040,
+        10639404,
+        0.0
+      ],
+      "bodyPr": null,
+      "first_rPr": null
+    },
+    "15": {
+      "geometry": [
+        613872,
+        5885004,
+        13667040,
+        10639404,
+        0.0
+      ],
+      "bodyPr": null,
+      "first_rPr": null
+    },
+    "16": {
+      "geometry": [
+        14829348,
+        5885004,
+        13667040,
+        10639404,
+        0.0
+      ],
+      "bodyPr": null,
+      "first_rPr": null
+    },
+    "17": {
+      "geometry": [
+        14829354,
+        17032308,
+        6586092,
+        5105148,
+        0.0
+      ],
+      "bodyPr": null,
+      "first_rPr": null
+    },
+    "18": {
+      "geometry": [
+        14829354,
+        22566564,
+        6586092,
+        5105148,
+        0.0
+      ],
+      "bodyPr": null,
+      "first_rPr": null
+    },
+    "19": {
+      "geometry": [
+        21886842,
+        17032308,
+        6586092,
+        5105148,
+        0.0
+      ],
+      "bodyPr": null,
+      "first_rPr": null
+    },
+    "20": {
+      "geometry": [
+        21910302,
+        22566564,
+        6586092,
+        5105148,
+        0.0
+      ],
+      "bodyPr": null,
+      "first_rPr": null
+    },
+    "21": {
+      "geometry": [
+        23887423,
+        600767,
+        8304791,
+        1097280,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:normAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"4320\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "22": {
+      "geometry": [
+        23887423,
+        1502099,
+        6701243,
+        1169012,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" vert=\"horz\" lIns=\"329184\" tIns=\"164592\" rIns=\"329184\" bIns=\"164592\" rtlCol=\"0\">\n  <a:noAutofit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"3240\" b=\"0\" dirty=\"0\">\n  <a:solidFill>\n    <a:schemeClr val=\"bg1\"/>\n  </a:solidFill>\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    },
+    "23": {
+      "geometry": [
+        5769608,
+        15215468,
+        17022609,
+        3046988,
+        0.0
+      ],
+      "bodyPr": "<a:bodyPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" wrap=\"none\" rtlCol=\"0\">\n  <a:spAutoFit/>\n</a:bodyPr>\n",
+      "first_rPr": "<a:rPr xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:p=\"http://schemas.openxmlformats.org/presentationml/2006/main\" lang=\"en-US\" sz=\"9600\" dirty=\"0\">\n  <a:latin typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:ea typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n  <a:cs typeface=\"Lato\" panose=\"020F0502020204030203\" pitchFamily=\"34\" charset=\"0\"/>\n</a:rPr>\n"
+    }
+  }
+}
