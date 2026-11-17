@@ -303,6 +303,7 @@ def recommendations(
     page_size: int = Query(12, ge=1, le=100),
     assignment: Literal["", "assigned", "unassigned"] = "",
     include_suggested: bool = True,
+    researched_only: bool = False,
 ):
     return discover(
         db,
@@ -319,6 +320,7 @@ def recommendations(
         page_size,
         assignment,
         include_suggested,
+        researched_only,
     )
 
 

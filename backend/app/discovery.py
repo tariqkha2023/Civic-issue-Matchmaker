@@ -31,6 +31,7 @@ def discover(
     page_size,
     assignment="",
     include_suggested=True,
+    researched_only=False,
 ):
     saved = set(
         db.scalars(select(SavedTask.task_id).where(SavedTask.user_id == user.id))
@@ -69,13 +70,18 @@ def discover(
             project_context(context["projects"][repo.id])
             if repo.id in context["projects"]
             else {},
+            context.get("research", {}).get(task.id),
         )
+        review = reviewed_context(task, context.get("research", {}).get(task.id),
+                                  project_context(context["projects"][repo.id]) if repo.id in context["projects"] else {})
+        if researched_only and not (review and (review.get("background") or "").strip()):
+            continue
         match = search_result(
             task,
             meta,
             q,
             include_suggested,
-            reviewed_context(task),
+            review,
             context["projects"].get(repo.id, {}),
         )
         if terms and match is None:

@@ -301,3 +301,21 @@ details{margin-top:18px}summary{cursor:pointer;color:#19594f;font-weight:600}
 .matchSkills { overflow-wrap: anywhere; }
 .eyebrow { color: #536b68; }
 .sideLabel { color: #90aaa7; }
+
+/* Discover follows the researched examples while retaining the normal workflows. */
+.discoveryTabs{display:flex;gap:4px;border-bottom:2px solid #c9ddd7;margin:24px 0 12px;flex-wrap:wrap}
+.discoveryTabs [role=tab]{font:inherit;font-weight:700;min-height:48px;padding:12px 20px;border:0;border-bottom:4px solid transparent;background:transparent;color:#36544b;cursor:pointer}
+.discoveryTabs [role=tab][aria-selected=true]{border-bottom-color:#227c72;background:#edf7f4;color:#124c43}
+.discoverIssue .originalTitle{font-size:18px;font-weight:700;line-height:1.5;margin:16px 0;overflow-wrap:anywhere}
+.discoverIssue .issueInterpretation{font-size:16px;line-height:1.65;max-width:none;margin:18px 0}
+.discoverIssue .issueInterpretation h3,.discoverIssue .suggestedSkills h3,.discoverIssue .recordedSkills h3{font-size:17px;margin:22px 0 8px;line-height:1.4}
+.discoverIssue .projectContext{border-left:3px solid #227c72;background:#eef8f5;padding:16px 18px;margin:18px 0}
+.discoverIssue .projectContext h3{margin:4px 0 8px}
+.discoverIssue .projectContext p{font-size:16px;color:inherit;margin:0;line-height:1.65}
+.discoverIssue .suggestedSkills{background:transparent;padding:0;margin:20px 0;border-radius:0;font-size:16px;line-height:1.65}
+.discoverIssue .suggestedSkills .tags span{background:#eef8f5;border:1px solid #a2c6bc;border-radius:20px;color:#244a40;font-size:14px}
+.discoverIssue .recordedSkills p{font-size:16px;line-height:1.65}
+.discoverIssue h2,.discoverIssue .titleButton{overflow-wrap:anywhere}
+@media(max-width:600px){.discoveryTabs [role=tab]{padding:12px 14px}.discoverIssue .originalTitle{font-size:16px}.discoverIssue .projectContext{padding:12px}}
+.discoverIssue .titleButton{text-decoration:none;font-weight:700}
+.discoverIssue .titleButton:hover{text-decoration:underline}

@@ -10,6 +10,7 @@ from app.store import (
     Contribution,
     IssueEnrichment,
     IssueInfo,
+    IssueResearch,
     MaintainerAccess,
     MetadataCorrection,
     RelevanceFeedback,
@@ -34,6 +35,7 @@ def projection_context(db, user, task_ids=None):
 
     return {
         "enrichments": {r.task_id: r for r in rows(IssueEnrichment)},
+        "research": {r.task_id: r for r in rows(IssueResearch)},
         "info": {r.task_id: r.fields for r in rows(IssueInfo)},
         "corrections": {r.task_id: r.fields for r in rows(MetadataCorrection)},
         "projects": {
@@ -94,9 +96,13 @@ def task_view(task, repo, saved=False, profile=None, db=None, user=None, context
         project_context(context["projects"][repo.id])
         if repo.id in context["projects"]
         else {},
+        context.get("research", {}).get(task.id),
     )
     feedback = context["feedback"].get(task.id)
-    review = reviewed_context(task)
+    review = reviewed_context(
+        task, context.get("research", {}).get(task.id),
+        project_context(context["projects"][repo.id]) if repo.id in context["projects"] else {},
+    )
     uncertainties = (
         [review.get("uncertainty", "")]
         if review
@@ -116,6 +122,7 @@ def task_view(task, repo, saved=False, profile=None, db=None, user=None, context
         "source": repo.source,
         "labels": task.labels,
         "metadata": metadata,
+        "source_skills": task.metadata_fields.get("skills", []),
         "first_seen": task.first_seen,
         "last_successful_scan": repo.last_success,
         "source_error": repo.scan_error,

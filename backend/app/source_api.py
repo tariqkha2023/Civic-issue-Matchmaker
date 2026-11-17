@@ -21,6 +21,40 @@ from app.store import (
 router = APIRouter(prefix="/api")
 
 
+@router.get("/admin/research")
+def research_status(user: Actor, db: DB):
+    require_admin(db, user)
+    from app.discovery_context import reviewed_context
+    from app.enrichment import MODEL, project_context
+    from app.research_schema import VERSION, digest, source_hash
+    from app.store import IssueResearch, JobLease, ResearchRun
+
+    rows = {r.task_id: r for r in db.scalars(select(IssueResearch))}
+    projects = {r.repository_id: project_context(r.fields) for r in db.scalars(select(SourceSettings))}
+    counts = dict(open_issues=0, collected=0, awaiting_interpretation=0,
+                  saved_backgrounds=0, ai_backgrounds=0, with_background=0)
+    for task in db.scalars(select(Task).join(Repository).where(
+        Task.status == "open", Repository.source == "github", Repository.enabled.is_(True)
+    )):
+        counts["open_issues"] += 1
+        project = projects.get(task.repository_id, {})
+        row = rows.get(task.id)
+        data = row.fields if row else {}
+        bundle = data.get("bundle", {})
+        if (bundle.get("version") == VERSION and bundle.get("expires_at", 0) > time.time()
+                and bundle.get("source_hash") == source_hash(task, project)):
+            counts["collected"] += 1
+            counts["awaiting_interpretation"] += data.get("attempt_hash") != digest(bundle) or data.get("model") != MODEL
+        review = reviewed_context(task, row, project)
+        if review and review.get("background"):
+            counts["with_background"] += 1
+            counts["ai_backgrounds" if review.get("kind") == "ai_research" else "saved_backgrounds"] += 1
+    latest = db.scalar(select(ResearchRun).order_by(ResearchRun.id.desc()).limit(1))
+    lease = db.get(JobLease, "context-research")
+    return {**counts, "running": bool(lease and lease.expires_at > time.time()),
+            "latest_run": latest.fields if latest else None}
+
+
 @router.get("/admin/enrichment")
 def enrichment_status(user: Actor, db: DB):
     require_admin(db, user)

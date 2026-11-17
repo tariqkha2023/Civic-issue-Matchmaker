@@ -253,6 +253,24 @@ class EnrichmentRun(Base):
     fields: Mapped[dict] = mapped_column(JSON, default=dict)
 
 
+class ResearchDocument(Base):
+    __tablename__ = "research_documents"
+    url: Mapped[str] = mapped_column(String(1000), primary_key=True)
+    fields: Mapped[dict] = mapped_column(JSON)
+
+
+class ResearchRun(Base):
+    __tablename__ = "research_runs"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    fields: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
+class IssueResearch(Base):
+    __tablename__ = "issue_research"
+    task_id: Mapped[int] = mapped_column(ForeignKey("tasks.id"), primary_key=True)
+    fields: Mapped[dict] = mapped_column(JSON, default=dict)
+
+
 class StagedIssue(Base):
     __tablename__ = "staged_issues"
     repository_id: Mapped[int] = mapped_column(

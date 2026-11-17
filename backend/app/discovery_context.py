@@ -16,17 +16,19 @@ def reviews():
     }
 
 
-def reviewed_context(task):
+def reviewed_context(task, research=None, project=None):
     item = reviews().get(getattr(task, "url", ""))
     text = " ".join((task.title + "\n" + task.description).split())
     if item and hashlib.sha256(text.encode()).hexdigest() == item["source_hash"]:
         return item
-    return None
+    from app.research_schema import research_review
+
+    return research_review(task, research, project or {})
 
 
-def add_reviewed_skills(task, metadata, correction=None):
+def add_reviewed_skills(task, metadata, correction=None, research=None, project=None):
     """Research suggestions remain inferred; curator skill edits take precedence."""
-    review = reviewed_context(task)
+    review = reviewed_context(task, research, project)
     if not review or correction and "skills" in correction:
         return metadata
     result = dict(metadata)

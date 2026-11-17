@@ -44,6 +44,7 @@ def test_saved_research_search_scoring_and_curator_precedence(client, db_engine)
         "/api/recommendations", params={"q": "frontend", "sort": "relevance"}
     ).json()
     assert result["total"] == 1
+    assert client.get("/api/recommendations", params={"researched_only": True}).json()["total"] == 1
     item = result["items"][0]
     assert item["reviewed_context"]["background"] == sample["background"]
     assert item["metadata"]["skill_weights"]["frontend development"] == 0.5
@@ -93,6 +94,7 @@ def test_saved_research_search_scoring_and_curator_precedence(client, db_engine)
         db.commit()
     changed = client.get(f"/api/tasks/{task_id}").json()
     assert changed["reviewed_context"] is None
+    assert client.get("/api/recommendations", params={"researched_only": True}).json()["total"] == 0
     assert changed["metadata"]["skills"] == []
 
 

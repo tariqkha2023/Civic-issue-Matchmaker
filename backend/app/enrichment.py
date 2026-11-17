@@ -100,7 +100,7 @@ def cached_fields(task, row, project=None):
     return {}
 
 
-def effective_metadata(task, enrichment=None, correction=None, project=None):
+def effective_metadata(task, enrichment=None, correction=None, project=None, research=None):
     meta = dict(task.metadata_fields)
     fields = cached_fields(task, enrichment, project)
     if fields and fields.get("status") != "rejected":
@@ -128,7 +128,7 @@ def effective_metadata(task, enrichment=None, correction=None, project=None):
         meta["skill_weights"] = {skill: 1.0 for skill in correction["skills"]}
     from app.discovery_context import add_reviewed_skills
 
-    return add_reviewed_skills(task, meta, correction)
+    return add_reviewed_skills(task, meta, correction, research, project)
 
 
 def validate_extraction(task, raw, *, check_evidence=True):
@@ -308,7 +308,14 @@ def project_context(fields):
     return {key: fields.get(key) for key in ["name", "mission", "languages", "topics"]}
 
 
-def extract(task, key, client):
+def extract(task, key, client, *, research_bundle=None):
+    schema, prompt = InterpretationResult, SYSTEM_PROMPT
+    content = {"project": getattr(task, "project", {}), "issue": public_text(task)}
+    if research_bundle is not None:
+        from app.research_schema import SYSTEM_PROMPT as RESEARCH_PROMPT
+        from app.research_schema import ResearchResult
+
+        schema, prompt, content = ResearchResult, RESEARCH_PROMPT, research_bundle
     response = client.post(
         "https://openrouter.ai/api/v1/chat/completions",
         headers={"Authorization": f"Bearer {key}", "X-Title": "Civic Issue Matchmaker"},
@@ -326,18 +333,15 @@ def extract(task, key, client):
                 "json_schema": {
                     "name": "issue_interpretation",
                     "strict": True,
-                    "schema": InterpretationResult.model_json_schema(),
+                    "schema": schema.model_json_schema(),
                 },
             },
             "messages": [
-                {"role": "system", "content": SYSTEM_PROMPT},
+                {"role": "system", "content": prompt},
                 {
                     "role": "user",
                     "content": json.dumps(
-                        {
-                            "project": getattr(task, "project", {}),
-                            "issue": public_text(task),
-                        },
+                        content,
                         ensure_ascii=False,
                     ),
                 },
